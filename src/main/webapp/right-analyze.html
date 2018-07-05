@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<title>发布考试</title>
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<link href="css/fSelect.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/jquery-3.3.1.js"></script>
+<script type="text/javascript" src="js/jquery.form.js"></script>
+<script src="js/jquery.tmpl.js"></script>
+<script type="text/javascript" src="js/fSelect.js"></script>
+<style type="text/css">
+.container {
+	margin-top: 30px;
+	text-align: left;
+	font-size: 14px;
+}
+
+.container label {
+	line-height: 30px;
+	margin-left: 30px;
+	margin-right: 30px;
+	font-size: 14px;
+}
+
+.title label {
+	font-size: 15pt;
+	font-family: "微软雅黑";
+	font-weight: bold;
+}
+
+.title {
+	margin-bottom: 15px;
+}
+
+.container input {
+	width: 220px;
+	height: 32px;
+	line-height: 32px;
+	border-top: solid 1px #a7b5bc;
+	border-left: solid 1px #a7b5bc;
+	border-right: solid 1px #ced9df;
+	border-bottom: solid 1px #ced9df;
+	background: url(images/inputbg.gif) repeat-x;
+	margin-bottom: 10px;
+	text-indent: 10px;
+}
+
+.container select {
+	width: 222px;
+    height: 37px;
+	line-height: 32px;
+	border-top: solid 1px #a7b5bc;
+	border-left: solid 1px #a7b5bc;
+	border-right: solid 1px #ced9df;
+	border-bottom: solid 1px #ced9df;
+	background: url(images/inputbg.gif) repeat-x;
+	margin-bottom: 10px;
+	text-indent: 10px;
+}
+
+hr {
+	margin-left: 30px;
+}
+
+.container button {
+	border: 0;
+	margin: 0;
+	padding: 0;
+	width: 137px;
+	height: 35px;
+	background: url(images/btnbg.png) no-repeat;
+	font-size: 14px;
+	font-weight: bold;
+	color: #fff;
+	cursor: pointer;
+	margin-left: 130px;
+}
+
+.errorInfo {
+	display: inline-block;
+}
+
+.list li {
+	font-size: 19px;
+    font-family: fantasy;
+}
+</style>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$(".tiptop a").click(function() {
+			$(".tip").fadeOut(200);
+		});
+
+		$("#btn-cancel").click(function() {
+			$(".tip").fadeOut(100);
+		});
+
+	});
+</script>
+
+</head>
+
+<body>
+
+	<div class="place">
+		<span>位置：</span>
+		<ul class="placeul">
+			<li><a href="#">首页</a></li>
+			<li><a href="#">考试管理</a></li>
+			<li><a href="#">统计分析</a></li>
+		</ul>
+	</div>
+	<div class="container">
+		<div class="title">
+			<label>统计分析</label>
+		</div>
+		<hr style="border: 3 double #987cb9" align="left" width="30%"
+			color="grey" size="3">
+		<br> <br>
+		<div>
+			<label>选择考试*</label>
+			<select class="selExam">
+				
+			</select>
+			<span style="color: red;" class="errorInfo"></span>
+		</div>
+		<div>
+			<label style="float: left;">选择班级*</label>
+
+			<!-- 下拉菜单的复选 -->
+			<div class="fs-wrap multiple">
+				<div class="fs-dropdown hidden">
+					<div class="fs-options">
+						<div class="fs-optgroup">
+							<div class="fs-optgroup-label">班级</div>
+						</div>
+					</div>
+				</div>
+				<select class="demo hidden" multiple="multiple">
+					<optgroup label="班级">
+						<!-- <option></option> -->
+					</optgroup>
+				</select>
+			</div>
+			<span style="color: red;" class="errorInfo"></span>
+		</div>
+		<div>
+			<label>选择类型*</label>
+			<select class="selKind">
+				<option value="gradeAnalyze">班级成绩分析</option>
+				<option value="quesAnalyze">试卷题目分析</option>
+			</select> 
+			<span style="color: red;" class="errorInfo"></span>
+		</div>
+		<div class="container-btn">
+			<button class="create-btn">确定</button>
+		</div>
+	</div>
+
+
+	<!-- tip 试卷 -->
+	<div class="tip" style="width: 550px">
+		<div class="tiptop">
+			<span></span> <a></a>
+		</div>
+
+		<div class="tip-form">
+			<ul class="list">
+				
+			</ul>
+		</div>
+	</div>
+
+	<!--模板-->
+	<script id="myTemplate" type="text/x-jquery-tmpl">
+	
+	</script>
+
+	<script type="text/javascript">
+		$(function() {
+			// 查询所有考试
+			$.ajax({
+				type : "post",
+				url : "doMark/selectAllExamName",
+				async : true,
+				success : function(data) {
+					$.each(data, function(i, val) {
+						$(".selExam").append("<option data-value="+val.eId+">" + val.eName+ "</option>");
+					});
+				},
+				error : function() {
+					alert("请求失败!");
+				}
+
+			});
+			/*查询所有班级*/
+			$.ajax({
+				type : "post",
+				url : "doStu/getClass",
+				async : true,
+				success : function(data) {
+					$.each(data, function(i, val) {
+						$(".demo optgroup").append(
+								"<option value="+val+">" + val + "</option>");
+					});
+					// 调用fSelect.js,初始化,下拉菜单
+					$('.demo').fSelect();
+				},
+				error : function() {
+					alert("请求失败!");
+				}
+
+			});
+			
+			/* 开始分析 */
+			$(".create-btn").click(	function() {
+				$(".errorInfo").empty();
+				$(".list").empty();
+				var data = {};
+				var stuClass = $(".demo").val();
+				var stuList= "";
+				for(var i = 0; i<stuClass.length;i++  ){
+					if(i == 0){
+						stuList = stuClass[i];
+					}else{
+						stuList += "/"+stuClass[i];	
+					}
+				}
+				data.stuClass = stuList;
+				data.eId = $(".selExam option:selected").attr("data-value");
+				data.kind = $(".selKind option:selected").val();
+				
+				
+				
+				if(stuClass.length==0){
+					$(".fs-wrap").next().text("请选择考试学生,可以多选");
+				}else{
+					$.ajax({
+						type : "post",
+						url : "doAnalyze/analyze",
+						async : true,
+						data : data,
+						success : function(data) {
+							console.log(data);
+							$.each(data, function(i, val) {
+								$(".list").append("<li>" + val + "</li>");
+							});
+							
+							$(".tip").fadeIn(100);
+						},
+						error : function() {
+							alert("请求失败!");
+						}
+
+					});
+				}
+			});
+
+		});
+	</script>
+</body>
+
+</html>

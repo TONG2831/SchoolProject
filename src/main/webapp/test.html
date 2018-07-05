@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>学生后台管理系统</title>
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/jquery-3.3.1.js"></script>
+<script type="text/javascript" src="js/jquery.form.js"></script>
+<script src="js/jquery.tmpl.js"></script>
+<script type="text/javascript" src="kindeditor/kindeditor-all.js"></script>
+
+<style type="text/css">
+.paperInfo {
+	text-align: center;
+}
+
+.paperName {
+	font-size: 20px;
+	font-weight: 200;
+	line-height: 40px;
+}
+
+.param li {
+	display: inline-block;
+	line-height: 45px;
+}
+
+#content div {
+	margin-top: 20px;
+	width: 80%;
+	margin: 15px auto;
+	border: 1px solid grey;
+	display: none;
+}
+
+#content ul {
+	margin-left: 20px;
+	border-bottom: 1px dashed grey;
+}
+
+#content li {
+	line-height: 35px;
+	font-size: 15px;
+}
+
+span {
+	position: relative;
+	width: 50px;
+	top: -10px;
+	background-color: white;
+}
+
+label {
+	line-height: 40px;
+	font-size: 15px;
+}
+
+p {
+	line-height: 40px;
+	font-size: 15px;
+}
+
+input[type="text"] {
+	width: 100px;
+	border-bottom: 1px solid;
+	outline:none;
+}
+
+.pagin {width：80 %; margin：6px auto;
+	
+}
+</style>
+</head>
+<body>
+	<div class="place">
+		<span>位置：</span>
+		<ul class="placeul">
+			<li><a href="#">首页</a></li>
+			<li><a href="#">在线考试</a></li>
+			<li><a href="#">开始考试</a></li>
+		</ul>
+	</div>
+
+
+	<div class="rightinfo">
+		<div class="paperInfo">
+			<p class="paperName">软件工程在线考试</p>
+			<input type="hidden" name="paperId">
+			<ul class="param">
+				<li>考试时间:5分钟&nbsp;&nbsp;|&nbsp;&nbsp;</li>
+				<li>剩余时间:</li>
+			</ul>
+		</div>
+		<div id="content">
+			<!-- <div class="answer">
+				<span>简答题</span>
+				<ul>
+					<li>
+						<p>10.简述十一届三中全会的意义?</p>
+					</li>
+				</ul>
+			</div> -->
+		</div>
+		<div class="pagin">
+			<ul class="paginList">
+				<li class="paginItem"><a href="javascript:;"> <span style="padding-top: 20px;"
+						class="pagepre"></span>
+				</a></li>
+				<li class="paginItem"><a href="#" class="prePage">上一页</a></li>
+				<li class="paginItem"><a href="#" class="nextPage">下一页</a></li>
+				<li class="paginItem"><a href="javascript:;"> <span style="padding-top: 20px;"
+						class="pagenxt"></span>
+				</a></li>
+			</ul>
+		</div>
+		<div class="btn-create-paper">
+			<button id="papaer-ok" class="" type="button">交卷</button>
+			<button id="papaer-cancel" class="" type="button">
+				<a href="sturight.html">取消</a>
+			</button>
+		</div>
+	</div>
+
+	<!-- JQuery -->
+	<script>
+		KindEditor.ready(function(K) {
+			window.editor = K.create('#editor_id');
+		});
+	</script>
+
+	<script type="text/javascript">
+		$('.tablelist tbody tr:odd').addClass('odd');
+		$(function() {
+			$("#content div").eq(0).show();
+			var countPage = 0;
+			var maxtime = 60; // 倒计时时间
+			
+			// 各题型分数默认
+			var sc = {};
+			sc.c = 0;
+			sc.dc = 0;
+			sc.j1 = 0;
+			sc.f = 0;
+			sc.a = 0;
+			
+			// 获取考试相关信息(试卷名称,考试时间,相关分数)
+			$.ajax({
+				type : "post",
+				url : "doExam/getExamInfo",
+				async : false,
+				success : function(data) {
+					console.log(data);
+					$(".paperName").text(data.pName);
+					$(".param li").eq(0).text("考试时间:" + data.eTime + " 分钟  |");
+					$("input[name='paperId']").val(data.pId);
+					maxtime = parseInt(data.eTime) * 60;	//考试倒计时,时间
+					if(data.cScore != '0'){
+						$(".param").append("<li>| 单选题: "+data.cScore+" 分</li>");
+						sc.c = data.cScore;
+					} 
+					if(data.dcScore != '0'){
+						$(".param").append("<li>| 多选题:"+data.dcScore+" 分</li>");
+						sc.dc = data.dcScore;
+					} 
+					if(data.fScore != '0'){
+						$(".param").append("<li>| 填空题:"+data.fScore+" 分</li>");
+						sc.f = data.fScore;
+					} 
+					if(data.jScore != '0'){
+						$(".param").append("<li>| 判断题:"+data.jScore+" 分</li>");
+						console.log("data.jScore"+data.jScore);
+						sc.j1 = data.jScore;
+					} 
+					if(data.aScore != '0'){
+						$(".param").append("<li>| 简答题:"+data.aScore+" 分</li>");
+						sc.a = data.aScore;
+					}
+					
+				},
+				error : function() {
+					alert("请求考试信息失败!");
+				}
+			});
+			
+			/* 取当前试卷id */
+			var data = {};
+			data.pId = $("input[name='paperId']").val();
+			$.ajax({
+				type : "post",
+				url : "doExam/getAllQues",
+				async : false,
+				data : data,
+				success : function(data) {
+					$.each(data, function(i, v) {
+						$("#content").append(v);
+						$("#content div").eq(0).show();
+					});
+				},
+				error : function() {
+					alert("请求考试信息失败!");
+				}
+			});
+
+			$(".nextPage").click(function() {
+				if (countPage < $("#content div").length - 1) {
+					$("#content div").eq(countPage).hide();
+					countPage++;
+					$("#content div").eq(countPage).show();
+				}
+			});
+
+			$(".prePage").click(function() {
+				if (countPage > 0) {
+					$("#content div").eq(countPage).hide();
+					countPage--;
+					$("#content div").eq(countPage).show();
+				}
+			});
+
+			/* 提交试卷时,获取答案 */
+			$("#papaer-ok").click(sc,function(event){
+				commit(event.data);
+			});
+			
+				/* 计时 */
+				function CountDown() {
+					if (maxtime >= 0) {
+						minutes = Math.floor(maxtime / 60);
+						seconds = Math.floor(maxtime % 60);
+						msg = "距离结束还有" + minutes + "分" + seconds + "秒";
+						$(".param li").eq(1).text(msg);
+						if (maxtime == 5 * 60)
+							alert("还剩5分钟");
+						--maxtime;
+					} else {
+						clearInterval(timer);
+						alert("时间到，交卷!");
+						commit(sc);
+						
+					}
+				}
+				timer = setInterval(CountDown, 1000);
+		});
+		
+		// 试卷提交
+		function commit(sc) {
+			console.log(sc);
+			
+			var score = 0;	//总分
+			
+			var objQues = "";
+
+			// 题目的字符串：题号+考生答案+标准答案+得分
+			// 单选.判断
+			var $c = $("input[type='radio']:checked");
+			for (var i = 0; i < $c.length; i++) {
+				var name = $c.eq(i).attr("name");	//获取题目id--qId
+				var answer = $("input[type='hidden'][name='"+name+"']").val();	//题目答案
+				var myanswer = $c.eq(i).val();	// 我的答案
+				var tmpScore = 0;
+				// 判断是选择题,且正确,区分选择判断,两者分值可能不同
+				if(answer == myanswer && answer != "对" && answer != "错"){
+					console.log("对");
+					score = score + sc.c;
+					tmpScore = sc.c;
+				}
+				
+				// 判断题
+				if(answer == myanswer && (answer == "对" || answer == "错")){
+					score = score + sc.j1;
+					tmpScore = sc.j1;
+				}
+				
+				if(i==0){
+					objQues = name+"-"+myanswer+"-"+answer+"-"+tmpScore;
+				}else{
+					objQues = objQues + "_"+name+"-"+myanswer+"-"+answer+"-"+tmpScore;
+				}
+				
+				console.log(name+":/我的答案："+myanswer+"/标准答案:"+answer+"分数:"+score);
+			}
+
+			/*多选 处理多选时,先获取所有的多选题目的id,去掉重复,然后获取考生答案*/ 
+			var $dc = $("input[type='checkbox']:checked");
+			var strName = "";
+			console.log($dc.length);
+			for (var i = 0; i < $dc.length; i++) {	// 获取当前所有多选题的name,去重
+				var name2 = $dc.eq(i).attr("name");	//获取题目id--qId
+				if(!(strName.indexOf(name2)>=0)){
+					if (strName == '' ) {
+						strName = name2;
+					}else{
+						 strName = strName + "-" + name2;
+					}
+				}
+			}
+			
+			if(strName!=''){
+				var dcName = strName.split("-");
+				for(var i = 0; i < dcName.length; i++){
+					var myanswer1 = '';
+					var $dc = $("input[name='"+dcName[i]+"']:checked");
+					for(var j = 0; j < $dc.length; j++){
+						if(j == 0){
+							myanswer1 = $dc.eq(j).val();
+						} else {
+							myanswer1 = myanswer1 + "/" + $dc.eq(j).val();
+						}
+					}
+					var answer1 = $("input[type='hidden'][name='"+dcName[i]+"']").val();
+					
+					if(myanswer1 == answer1){
+						score = score + sc.dc;
+						objQues = objQues + "_"+dcName[i]+"-"+myanswer1+"-"+answer1+"-"+sc.dc;
+					}else{
+						objQues = objQues + "_"+dcName[i]+"-"+myanswer1+"-"+answer1+"-"+"0";
+					}
+					console.log(dcName[i]+":/我的答案："+myanswer1+"/标准答案:"+answer1+" "+score+"分");
+				}
+			}
+			
+			console.log("总得分:"+score);
+			
+			/* 主观题 */
+			var subQues = "";
+			// 填空
+			var $f = $("input[type='text']");
+			for (var i = 0; i < $f.length; i++) {
+				var name = $f.eq(i).attr("name");
+				var answer = $f.eq(i).val();
+				if(i == 0){
+					subQues = name+"-"+answer;
+				} else {
+					subQues = subQues+"_"+name+"-"+answer;
+				}
+			}
+
+			// 简答
+			var $a = $("textarea");
+			for (var i = 0; i < $a.length; i++) {
+				var name = $a.eq(i).attr("name");
+				var answer = $a.eq(i).val();
+				
+				subQues = subQues+"_"+name+"-"+answer;
+			}
+			
+			console.log("客观题:"+objQues);
+			console.log("主观题:"+subQues);
+			var data = {};
+			data.objQues = objQues;
+			data.subQues = subQues;
+			data.objScore = score;
+			
+			$.ajax({
+				type : "post",
+				url : "doExam/saveResult",
+				async : false,
+				data : data,
+				success : function() {
+					window.location.href="sturight.html";										
+				}
+			});
+			
+		}
+	</script>
+</body>
+</html>

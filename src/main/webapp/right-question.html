@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>后台管理系统</title>
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/jquery-3.3.1.js"></script>
+<script type="text/javascript" src="js/jquery.form.js"></script>
+<script src="js/jquery.tmpl.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		
+		$(".import").click(function(){
+			$("#filefield").hide();
+			$(".fileTip").fadeIn(200);
+		});
+		
+		$(".addStu").click(function() {
+			//tip模板修改
+			$('.errinfo').empty();
+			$(".tiptop span").empty();
+			$(".tiptop span").append("添加");
+			$("#btn-alter").hide();
+			$("#btn-add").show();
+			$("textarea").val('');
+			$(".tip input[type='text']").attr("readonly","readonly");
+			
+			$.ajax({
+				type : "post",
+				url : "doQues/getQId",
+				async : false,
+				dataType : "json",
+				success : function(data){
+					$(".tip input[type='text']").val(data.qId);
+				}
+			});
+			
+			$(".tip").fadeIn(200);
+			
+		});
+
+		$(".tiptop a").click(function() {
+			$(".tip").fadeOut(200);
+			$(".fileTip").fadeOut(200);
+		});
+
+		$("#btn-cancel").click(function() {
+			$(".tip").fadeOut(100);
+		});
+
+	});
+</script>
+
+
+</head>
+
+<body>
+
+	<div class="place">
+		<span>位置：</span>
+		<ul class="placeul">
+			<li><a href="#">首页</a></li>
+			<li><a href="#">试题管理</a></li>
+			<li><a href="#">试题信息</a></li>
+		</ul>
+	</div>
+
+	<div class="rightinfo">
+
+		<div class="tools">
+
+			<ul class="toolbar">
+
+				<li><label>题目类型:</label>
+					<div class="vocation">
+						<select class="select1">
+							<option data-value='all' selected>全部</option>
+							<option data-value='c'>单选</option>
+							<option data-value='dc'>多选</option>
+							<option data-value='j'>判断</option>
+							<option data-value='f'>填空</option>
+							<option data-value='a'>简答</option>
+						</select>
+					</div></li>
+
+				<li><label>试卷:</label>
+					<div class="vocation">
+						<select class="select2">
+							<option data-value='all' selected>全部</option>
+						</select>
+					</div></li>
+
+				<li><label>搜索輸入:</label>
+					<input name="searchText" type="text" class="scinput" />
+				</li>
+
+				<li><label>&nbsp;</label>
+					<input name="" type="button" class="scbtn" value="查询" />
+				</li>
+
+			</ul>
+
+			<ul class="toolbar1">
+				<li class="deleteSome"><span><img src="images/t03.png" /></span>删除</li>
+				<div class="dropdown">
+					<a class="dropbtn"><span><img src="images/t01.png" /></span>添加</a>
+					<div class="dropdown-content">
+						<a href="#" class="addStu">在线添加</a> <a
+							href="#" class="import">本地导入</a>
+					</div>
+				</div>
+			</ul>
+
+		</div>
+
+		<table class="tablelist" id="table-data">
+			<thead>
+				<tr>
+					<th><input id="checkedAll" type="checkbox" value="all" /></th>
+					<th>试题编号<i class="sort"><img src="images/px.gif" /></i></th>
+					<th>试题内容</th>
+					<th>试题答案</th>
+					<th>试题类型</th>
+					<th>所属试卷</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+
+			</tbody>
+		</table>
+
+		<div class="pagin">
+			<div class="message">
+				共<i class="blue" id="totals"></i>条记录，当前显示第&nbsp;<i class="blue"
+					id="pageNo">&nbsp;</i>页, 共<i class="blue" id="pages"></i>页
+			</div>
+			<ul class="paginList">
+				<li class="paginItem">
+					<a href="javascript:;">
+						<span class="pagepre"></span>
+					</a>
+				</li>
+				<li class="paginItem"><a href="#" class="prePage">上一页</a></li>
+				<li class="paginItem"><a href="#" class="nextPage">下一页</a></li>
+				<li class="paginItem">
+					<a href="javascript:;">
+						<span class="pagenxt"></span>
+					</a>
+				</li>
+			</ul>
+			<div class="pageJump">
+				<button class="jump" style="float:left">跳</button> &nbsp;<input type="text" name="pageNum">&nbsp;页
+			</div>
+		</div>
+
+		<!-- fileTip -->
+		<div class="fileTip">
+			<div class="tiptop">
+				<span>本地导入</span> <a></a>
+			</div>
+
+			<div class="tip-form">
+				<form action="doFile/uploadPaper" id="fileForm" enctype="multipart/form-data" method="post" onsubmit="return checkFile(this)">
+					<fieldset>
+						<legend></legend>
+						<label id="filefield" hidden="hidden">
+							<span id="fileTitle">已选文件:</span>
+							<sapn id="fileName"></sapn>
+						</label>
+						<div class="formitm">
+							<div class="ipt">
+							<a class="input-file input-fileup" href="javascript:;">
+         							选择文件 + 
+         						<input size="100" type="file" name="file" id="file">
+							</a>
+								
+								<input type="submit" class="ipt-sub" name="确定"/>
+								
+							</div>
+						</div>
+					</fieldset>
+				</form>
+			</div>
+		</div>
+		
+		<!-- tip -->
+		<div class="tip">
+			<div class="tiptop">
+				<span>添加题目</span> <a></a>
+			</div>
+
+			<div class="tipinfo">
+				<span><img src="images/ticon.png" /></span>
+				<div class="tipright">
+					<p>请输入试题信息:</p>
+					<p class="errinfo" style="color:red"></p>
+				</div>
+			</div>
+
+			<div class="tip-form">
+					<fieldset>
+						<legend></legend>
+						<div class="formitm">
+							<label class="lab">试题编号：</label>
+							<div class="ipt">
+								<input type="text" class="u-ipt" name="id" />
+							</div>
+						</div>
+						<div class="formitm">
+							<label class="lab">试题内容：</label>
+							<div class="ipt">
+								<textarea rows="6" cols="10" class="u-area a-content"></textarea>
+							</div>
+						</div>
+						<div class="formitm">
+							<label class="lab">试题答案：</label>
+							<div class="ipt">
+								<textarea rows="6" cols="10" class="u-area a-answer"></textarea>
+							</div>
+						</div>
+						<div class="formitm">
+							<label class="lab">试卷类型：</label>
+							<div class="ipt">
+								<select class="selectQType">
+									<option value="c">单选题</option>
+									<option value="dc">多选题</option>
+									<option value="j">判断题</option>
+									<option value="f">填空题</option>
+									<option value="a">简答题</option>
+								</select>
+							</div>
+						</div>
+						<div class="formitm formitm-1">
+							<button id="btn-add" class="u-btn" type="button">确定</button>
+							<button id="btn-alter" class="u-btn">修改</button>
+							<button id="btn-cancel" class="u-btn" type="button">取消</button>
+						</div>
+					</fieldset>
+			</div>
+		</div>
+		<!-- tip End -->
+
+	</div>
+
+	<!--试题模板-->
+	<script id="myTemplate" type="text/x-jquery-tmpl">
+			<tr>
+				<td><input type="checkbox" value=${qId} /></td>
+				<td>${qId}</td>
+				<td title='${qContent}'>${qContent}</td>
+				<td>${qAnswer}</td>
+				{{if qType=='c'}}
+					<td>选择题</td>
+				{{else qType=='j'}}
+					<td>判断题</td>
+				{{else qType=='f'}}
+					<td>填空题</td>
+				{{else qType=='dc'}}
+					<td>多选题</td>
+				{{else qType=='a'}}
+					<td>简答题</td>
+				{{/if}}
+				{{if pName==null}}
+				<td>无</td>
+				{{else}}
+				<td title='${pName}'>${pName}</td>
+				{{/if}}
+				<td>
+					<a href="#" class="tablelink" data-id="${qId}" data-action="edit">修改</a>
+					<a href="#" class="tablelink deleteQues" data-id="${qId}" data-action="delete">删除</a>
+				</td>
+			</tr>
+		</script>
+
+	<!-- JQuery -->
+	<script type="text/javascript">
+		$('.tablelist tbody tr:odd').addClass('odd');
+
+		$(function() {
+			
+			//隐藏tip中的修改按钮
+			$("#btn-alter").hide();
+			
+			/* -----初始化页面信息----- */
+			
+			/*查询所有试卷*/
+			$.ajax({
+				type : "post",
+				url : "doQues/getPInfo",
+				async : true,
+				dataType : "json",
+				success : function(data) {
+					$.each(data, function(i, val) {
+						$(".select2").append("<option data-value="+val.pId+">" + val.pName + "</option>");
+					});
+					
+					// 绑定事件
+					bindChangeSelect2();
+				},
+				error : function() {
+					alert("请求失败!");
+				}
+
+			});
+			
+			/* 填充试题信息 */
+			/* 初始化试题查询参数 */
+			var pageNo = 1;
+			var ques = {};
+			ques.qType = "all";
+			ques.pName = "all";
+			ques.searchText = "";
+			ques.pageNo = pageNo;
+			
+			getQInfo(ques);
+			bindChangeSelect1();
+			/* -----初始化页面信息---END-- */
+			
+			
+			
+			/* ----事件------ */
+			
+			/* 添加 */
+			$("#btn-add").click(function() {
+				var data = {};
+				data.qId = $("input[name='id']").val();
+				data.qContent = $(".a-content").val();
+				data.qAnswer = $(".a-answer").val();
+				data.qType = $(".selectQType").val();
+				
+				console.log(data);
+				
+				$.ajax({
+					type : "post",
+					url : "doQues/addQues",
+					async : true,
+					dataType : "json",
+					contentType : 'application/json;charset=utf-8',
+					data : JSON.stringify(data),
+					success : function(data) {
+						console.log(data.msg);
+						$(".tip").fadeOut(100);
+						window.location.reload();
+					},
+					error : function() {
+					}
+				});
+			});
+			
+			/* 修改学生信息 */
+			$("#btn-alter").click(function() {
+				var data = {};
+				data.qId = $("input[name='id']").val();
+				data.qContent = $(".a-content").val();
+				data.qAnswer = $(".a-answer").val();
+				data.qType = $(".selectQType").val();
+				console.log("修改后试题信息：");
+				console.log(data);
+				
+				$.ajax({
+					type : "post",
+					url : "doQues/alterQues",
+					async : false,
+					dataType : "json",
+					contentType : 'application/json;charset=utf-8',
+					data : JSON.stringify(data),
+					success : function(data) {
+						$(".tip").fadeOut(200);
+						console.log(data);
+						getQInfo(ques);
+					},
+					error : function() {
+						alert("请求失败!")
+					}
+				});
+			});
+			
+			/* checked 全选和反选 */
+			$("#checkedAll").change(function(){
+				var c = $("#checkedAll").prop("checked");
+				console.log(c);
+				$("tbody input").prop("checked",c);
+			});
+			
+			/* 批量删除 */
+			$(".deleteSome").click(function(){
+				var qId = "";
+				 $("tbody input:checked").each(function(){
+					 console.log($(this).val());
+					 qId+=$(this).val()+".";
+				 })
+				 var ques1 = {};
+				 ques1.qId = qId;
+				 $.ajax({
+						type : "post",
+						url : "doQues/deleteSome",
+						async : true,
+						data : ques1,
+						success : function() {
+							getQInfo(ques);
+							$("#checkedAll").prop("checked",false);
+							//window.location.reload();
+						},
+						error : function() {
+						}
+					});
+			});
+			
+			/* 按条件搜索学生信息 */
+			$(".scbtn").click(function(){
+				ques.qType = $(".select1 option:selected").attr("data-value");
+				ques.pId = $(".select2 option:selected").attr("data-value");
+				ques.searchText = $("input[name='searchText']").val();
+				getQInfo(ques);
+			});
+			
+			/* 下一页点击事件 */
+			$(".nextPage").click(function(){
+				var pages = $("#pages").text();
+				var pageNo = $("#pageNo").text();
+				if(pages == pageNo){
+					//alert("已在最后一页!")
+				}else{
+					ques.pageNo = ++pageNo;
+					console.log(pageNo);
+					getQInfo(ques);
+				}
+			});
+			
+			/* 上一页点击事件 */
+			$(".prePage").click(function(){
+				var pages = $("#pages").text();
+				var pageNo = $("#pageNo").text();
+				if('1' == pageNo){
+					//alert("当前页为第一页!");
+				}else{
+					ques.pageNo = --pageNo;
+					getQInfo(ques);
+				}
+			});
+			
+			/* 跳页点击事件 */
+			$(".jump").click(function(){
+				var pageNum = parseInt($("input[name='pageNum']").val());
+				var pages = parseInt($("#pages").text());
+				var pageNo = parseInt($("#pageNo").text());
+				if(pageNum>pages){
+					alert("页数过大!");
+				}else if(pageNum == pageNo){
+					alert("已在当前页!");
+				}else{
+					ques.pageNo = pageNum;
+					getQInfo(ques);
+				}
+				
+			});
+			/* 表单提交后的数据返回 */
+			$("#fileForm").ajaxForm(function(data){  
+				console.log("试卷导入返回：");
+				console.log(data);
+				if(data.msg=='1'){
+					alert("试卷名称已存在或试卷已存在！")
+				}else if(data.msg=='0'){
+					alert("试卷导入成功！");
+				}else{
+					alert("试卷导入失败！");
+				}
+				$(".fileTip").fadeOut(200);
+				window.location.reload();
+		    }); 
+			
+			/* 选中文件事件 */
+			$(".input-fileup").change(function(){
+				var file = $("input[type='file']").val();
+				var split = file.split("\\");
+				var fileName = split[2];
+				$("#fileName").text(fileName);
+				$("#filefield").show();
+			});
+			
+			/*绑定select1 改变事件  */
+			function bindChangeSelect1(){
+				$(".select1").change(function(){
+					ques.qType = $(".select1 option:selected").attr("data-value");
+					ques.pId = $(".select2 option:selected").attr("data-value");
+					ques.pageNo = 1;
+					getQInfo(ques);
+				});
+			}
+			/*绑定select2 改变事件  */
+			function bindChangeSelect2(){
+				$(".select2").change(function(){
+					ques.qType = $(".select1 option:selected").attr("data-value");
+					ques.pName = $(".select2 option:selected").attr("data-value");
+					ques.pageNo = 1;
+					getQInfo(ques);
+				});
+			}
+		});
+		
+		/* 分页查询试题信息 */
+		function getQInfo(ques){
+			$.ajax({
+				type : "post",
+				url : "doQues/getAllQInfo",
+				async : false,
+				data : ques,
+				dataType : "json",
+				success : function(data) {
+					console.log(data);
+					$("tbody").empty();
+					$("#myTemplate").tmpl(data.list).appendTo("tbody");
+					$("#totals").text(data.total);
+					$("#pageNo").text(data.pageNum);
+					$("#pages").text(data.pages);
+					// 绑定点击事件
+					bindEvent();
+				},
+				error : function() {
+					alert("请求失败!");
+				}
+			});
+		}
+		
+		/* 绑定点击事件*/
+		function bindEvent() {
+			// 修改
+			$('#table-data a[data-action="edit"]').on('click', function() {
+				var ques = {}
+				ques.qId= $(this).attr('data-id');
+				$.ajax({
+					type : "post",
+					url : "doQues/getOneQInfo",
+					async : true,
+					data : ques,
+					success : function(data) {
+						console.log(data);
+						/* 修改tip页面信息 */
+						$(".tiptop span").empty();
+						$(".tiptop span").append("修改");
+						$("#btn-add").hide();
+						$("#btn-alter").show();
+						$("input[name='id']").attr("readonly","readonly");//学号不可编辑
+						$('.errinfo').empty();
+						/* 信息回填 */
+						$("input[name='id']").val(data.qId);
+						$(".a-content").val(data.qContent);
+						$(".a-answer").val(data.qAnswer);
+						$(".selectQType").val(data.qType);
+						
+						$(".tip").fadeIn(100);
+					},
+					error : function() {
+						alert("学生信息请求失败");
+					}
+				});
+				
+			});
+			
+			// 删除事件
+			$('#table-data a[data-action="delete"]').on('click', function() {
+				var ques = {};
+				ques.qId = $(this).attr('data-id');
+				$.ajax({
+					type : "post",
+					url : "doQues/deleteQues",
+					async : true,
+					data : ques,
+					success : function() {
+						window.location.reload();
+					},
+					error : function() {
+					}
+				
+			});
+			});
+		}
+	</script>
+</body>
+
+</html>

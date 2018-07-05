@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>阅卷</title>
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+.tip {
+	width: 713px;
+	height: 530px;
+	top: 1%;
+	left: 5%;
+}
+
+.tip-form {
+	height: 530px;
+}
+
+.formitm-1 {
+	padding-left: 100px;
+	position: relative;
+	bottom: -2%;
+	left: -15%;
+}
+
+.quesInfo {
+	display: none;
+	width: 560px;
+}
+
+.quesList input {
+	height: 13px;
+	width: 72px;
+	color: red;
+	text-align: center;
+	border-bottom: 1px solid;
+	outline:none;
+}
+
+.quesList label {
+	margin-right: 20px;
+	font-size: 10pt;
+	font-family: serif
+}
+
+.quesList p {
+	font-size: 12pt;
+	font-family: serif
+}
+
+.pagin2 {
+	margin-top: 50px;
+}
+
+.exportClass, .exportEid {
+	background: url(../images/toolbg.gif) repeat-x;
+	line-height: 33px;
+	height: 33px;
+	border: solid 1px #d3dbde;
+	float: left;
+	padding-right: 10px;
+	margin-right: 5px;
+	border-radius: 3px;
+	behavior: url(js/pie.htc);
+	cursor: pointer;
+}
+
+.confirmExport {
+	width: 85px;
+	height: 35px;
+	background: url(./images/btnbg.png) no-repeat center;
+	font-size: 14px;
+	font-weight: bold;
+	color: #fff;
+	cursor: pointer;
+	border-radius: 3px;
+	margin-left: 40px;
+}
+
+.aninfo {
+	font-weight: bold;
+}
+
+.teacherScore {
+	color: red;
+}
+.score {
+	color:blue;
+}
+.standAnswer{
+	font-weight:bold;
+	color:green;
+}
+.stuAnswer{
+	
+}
+</style>
+<script type="text/javascript" src="js/jquery-3.3.1.js"></script>
+<script type="text/javascript" src="js/jquery.form.js"></script>
+<script src="js/jquery.tmpl.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+
+		$(".import").click(function() {
+			$("#filefield").hide();
+			$(".fileTip").fadeIn(200);
+		});
+
+		$(".tiptop a").click(function() {
+			$(".tip").fadeOut(200);
+			$(".fileTip").fadeOut(200);
+		});
+
+		$("#btn-cancel").click(function() {
+			$(".tip").fadeOut(100);
+		});
+		$(".importExcel").click(function() {
+			$(".exErrorInfo").text("");
+			$(".fileTip").fadeIn(100);
+		});
+	});
+</script>
+</head>
+<body>
+	<div class="place">
+		<span>位置：</span>
+		<ul class="placeul">
+			<li><a href="#">首页</a></li>
+			<li><a href="#">考试管理</a></li>
+			<li><a href="#">阅卷</a></li>
+		</ul>
+	</div>
+
+	<div class="rightinfo">
+
+		<div class="tools">
+			<ul class="toolbar">
+				<li><label>考试:</label>
+					<div class="vocation">
+						<select class="select1">
+							<option data-value='all' selected>全部</option>
+						</select>
+					</div>
+				</li>
+				<li><label>班级:</label>
+					<div class="vocation">
+						<select class="select2">
+							<option data-value='all' selected>全部</option>
+						</select>
+					</div>
+				</li>
+				<li><label>搜索条件:</label>
+					<div class="vocation">
+						<select class="select3">
+							<option value='stuNo'>学号</option>
+							<option value='stuName'>姓名</option>
+						</select>
+					</div>
+				</li>
+				<li><label>輸入:</label> <input name="searchText" type="text"
+					class="scinput" />
+				</li>
+				<li><label>&nbsp;</label>
+					<input name="" type="button" class="scbtn" value="查询" />
+				</li>
+			</ul>
+
+			<ul class="toolbar1">
+				<li class="deleteSome delete"><span><img src="images/t03.png" /></span>删除</li>
+				<li class="deleteSome importExcel">成绩导出</li>
+			</ul>
+		</div>
+		<table class="tablelist" id="table-data">
+			<thead>
+				<tr>
+					<th><input id="checkedAll" type="checkbox" value="all" /></th>
+					<th>学号<i class="sort"><img src="images/px.gif" /></i></th>
+					<th>姓名</th>
+					<th>班级</th>
+					<th>考试</th>
+					<th>客观题分数</th>
+					<th>主观题分数</th>
+					<th>总分数</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+
+		<div class="pagin pagin1">
+			<div class="message msg1">
+				共<i class="blue" id="totals"></i>条记录，当前显示第&nbsp;<i class="blue"
+					id="pageNo1">&nbsp;</i>页, 共<i class="blue" id="pages1"></i>页
+			</div>
+			<ul class="paginList">
+				<li class="paginItem"><a href="javascript:;"> <span
+						class="pagepre"></span>
+				</a></li>
+				<li class="paginItem"><a href="#" class="prePage rp1">上一页</a></li>
+				<li class="paginItem"><a href="#" class="nextPage np1">下一页</a></li>
+				<li class="paginItem"><a href="javascript:;"> <span
+						class="pagenxt"></span>
+				</a></li>
+			</ul>
+			<div class="pageJump">
+				<button class="jump" style="float: left">跳</button>
+				&nbsp;<input type="text" name="pageNum">&nbsp;页
+			</div>
+		</div>
+
+		<!-- 成绩导出 -->
+		<div class="fileTip">
+			<div class="tiptop">
+				<span>成绩导出</span> <a></a>
+			</div>
+
+			<div class="tip-form">
+				<span style="color: red" class="exErrorInfo"></span> <select
+					class="exportEid">
+				</select> <select class="exportClass">
+				</select> <input type="button" class="confirmExport" name="查询" value="确认" />
+			</div>
+		</div>
+
+		<!-- tip -->
+		<div class="tip">
+			<div class="tiptop">
+				<span>阅卷</span> <a></a>
+			</div>
+			<div class="tip-form">
+				<input type="hidden" name="stuNo"> 
+				<input type="hidden" name="eId"> 
+				<input type="hidden" name="gId">
+				<div class="quesList">
+					<!-- <div class="quesInfo">
+						<ul>
+							<li>
+								<p>1.简述十一届三中全会的意义?</p>
+							</li>
+							<li>考生答案:</li>
+							<li>标准答案:</li>
+							<li><label>推荐分数:</label> <label>教师评分:<input
+									type="text" name="score"></label></li>
+						</ul>
+					</div> -->
+				</div>
+				<div class="pagin pagin2">
+					<div class="message msg2">
+						第&nbsp;<i class="blue" id="pageNo2">&nbsp;</i>页, 共<i class="blue"
+							id="pages2"></i>页
+					</div>
+					<ul class="paginList">
+						<li class="paginItem"><a href="javascript:;"> <span
+								class="pagepre"></span>
+						</a></li>
+						<li class="paginItem"><a href="#" class="prePage rp2">上一页</a></li>
+						<li class="paginItem"><a href="#" class="nextPage np2">下一页</a></li>
+						<li class="paginItem"><a href="javascript:;"> <span
+								class="pagenxt"></span>
+						</a></li>
+					</ul>
+				</div>
+				<div class="formitm formitm-1">
+					<button id="btn-mark" class="u-btn" type="button">确定</button>
+					<button id="btn-cancel" class="u-btn" type="button">取消</button>
+				</div>
+			</div>
+		</div>
+		<!-- tip End -->
+
+	</div>
+
+	<!--学生成绩模板-->
+	<script id="myTemplate" type="text/x-jquery-tmpl">
+			<tr>
+				<td><input type="checkbox" value=${stuNo}-${eId}-${id} /></td>
+				<td>${stuNo}</td>
+				<td>${student.stuName}</td>
+				<td>${student.stuClass}</td>
+				<td>${eId}</td>
+				<td>${objScore}</td>
+				{{if subScore == null}}
+					<td>未阅卷</td>
+				{{else}}
+					<td>${subScore}</td>
+				{{/if}}
+				<td>${totalScore}</td>
+				<td>
+					<a href="#" class="tablelink markPaper" data-id="${stuNo}" data-action="mark">阅卷</a>
+					<input type="hidden" name="eId" value="${eId}">
+					<input type="hidden" name="gId" value="${id}">
+				</td>
+			</tr>
+		</script>
+
+	<!-- 阅卷模板 -->
+	<script id="quesTmpl" type="text/x-jquery-tmpl">
+		<div class="quesInfo ${question.qType}">
+			<ul>
+				<li>
+					<p>${question.qId}.${question.qContent}{{if question.qType == 'f'}}(填空题){{else}}(简答题){{/if}}</p>
+				</li>
+				<li><label class='aninfo'>考生答案:</label><label class="stuAnswer">${stuAnswer}</label></li>
+				<li><label class='aninfo'>标准答案:</label><label class="standAnswer">${question.qAnswer}</label></li>
+				<li>
+					<label class='aninfo'>题目分值:</label><label class="score">${qScore}</label>
+					<label class='aninfo'>推荐分数:</label><label class="score">${recomdScore}</label>
+					<label class='aninfo teacherScore'>教师评分:<input type="text" name=${question.qId} value=${recomdScore}></label>
+				</li>
+			</ul>
+		</div>
+	</script>
+
+	<!-- JQuery -->
+	<script type="text/javascript">
+		$('.tablelist tbody tr:odd').addClass('odd');
+
+		$(function() {
+			/* -----初始化页面信息----- */
+			/*查询所有试卷名*/
+			$.ajax({
+				type : "post",
+				url : "doMark/selectAllExamName",
+				async : true,
+				success : function(data) {
+					$.each(data, function(i, val) {
+						$(".select1").append("<option data-value="+val.eId+">" + val.eName+ "</option>");
+						$(".exportEid").append("<option data-value="+val.eId+">" + val.eName+ "</option>");
+					});
+					bindChangeSelect1();
+				},
+				error : function() {
+					alert("请求失败!");
+				}
+
+			});
+
+			/*查询所有班级*/
+			$.ajax({
+				type : "post",
+				url : "doStu/getClass",
+				async : true,
+				success : function(data) {
+					$.each(data, function(i, val) {
+						$(".select2").append("<option data-value="+val+">" + val+ "</option>");
+						$(".exportClass").append("<option data-value="+val+">" + val+ "</option>");
+					});
+					// 绑定事件
+					bindChangeSelect2();
+				},
+				error : function() {
+					alert("请求失败!");
+				}
+			});
+
+			/* 填充学生信息 */
+			var pageNo = 1;
+			var stu = {};
+			stu.stuClass = "all";
+			stu.eId = "all";
+			stu.searchCond = "all";
+			stu.searchText = "";
+
+			getStudentByPage(pageNo, stu);
+
+			// 成绩导出
+			$(".confirmExport").click(function() {
+				var data = {};
+				data.stuClass = $(".exportClass option:selected").attr("data-value");
+				data.eId = $(".exportEid option:selected").attr("data-value");
+				$.ajax({
+					type : "post",
+					url : "doMark/export",
+					async : true,
+					data : data,
+					success : function(data) {
+						console.log(data);
+						if (data == "error") {
+							$(".exErrorInfo").text("无学生成绩可查");
+						} else {
+							$(".fileTip").fadeOut(200);
+							alert("导出 " + data + " 条数据")
+						}
+					},
+					error : function() {
+						alert("请求失败!");
+					}
+				});
+			});
+			
+			// 阅卷提交
+			$("#btn-mark").click(function() {
+				var length = $(".quesInfo input").length;
+				var subScore = 0;
+				var subAnswer = "";
+				for (var i = 0; i < length; i++) {
+					var qId = $(".quesInfo input").eq(i).attr("name");
+					var stuAnswer = $(".quesInfo input").eq(i).parent().parent().siblings().eq(1).children().eq(1).text();
+					var standAnswer =$(".quesInfo input").eq(i).parent().parent().siblings().eq(2).children().eq(1).text();
+					var score = parseInt($(".quesInfo input").eq(i).val())
+					subScore = subScore + score;
+					subAnswer =  subAnswer+qId+"-"+stuAnswer+"-"+standAnswer+"-"+score+"_";
+				}
+				var stu1 = {};
+				stu1.stuNo = $(".tip-form input[name='stuNo']").val();
+				stu1.eId = $(".tip-form input[name='eId']").val();
+				stu1.id = $(".tip-form input[name='gId']").val();
+				stu1.subScore = subScore;
+				stu1.subAnswer = subAnswer;
+				$.ajax({
+					type : "post",
+					url : "doMark/saveSubScore",
+					async : true,
+					data : stu1,
+					success : function(data) {
+						$(".tip").fadeOut(200);
+						var pageNo = $("#pageNo1").text();
+						getStudentByPage(pageNo, stu);
+					},
+					error : function() {
+						alert("请求失败!");
+					}
+				});
+			});
+			$(".delete").click(function(){
+				var qId = "";
+				 $("tbody input:checked").each(function(){
+					 console.log($(this).val());
+					 qId+=$(this).val()+".";
+				 })
+				 var ques = {};
+				 ques.info = qId;
+				 
+				$.ajax({
+					type : "post",
+					url : "doMark/deleteSome",
+					async : true,
+					data : ques,
+					success : function(data) {
+						window.location.reload();
+					},
+					error : function() {
+					}
+				});
+			});
+			/* checked 全选和反选 */
+			$("#checkedAll").change(function(){
+				var c = $("#checkedAll").prop("checked");
+				console.log(c);
+				$("tbody input").prop("checked",c);
+			});
+			
+			/* 按条件搜索学生信息 */
+			$(".scbtn").click(
+					function() {
+						stu.stuDepartment = $(".select1 option:selected").attr("data-value");
+						stu.stuClass = $(".select2 option:selected").attr("data-value");
+						stu.searchCond = $(".select3 option:selected").val();
+						stu.searchText = $("input[name='searchText']").val();
+						console.log(stu);
+						getStudentByPage(pageNo, stu);
+					});
+
+			/* 下一页点击事件 */
+			$(".np1").click(function() {
+				var pages = $("#pages1").text();
+				var pageNo = $("#pageNo1").text();
+				if (pages == pageNo) {
+					//alert("已在最后一页!")
+				} else {
+					pageNo++;
+					getStudentByPage(pageNo, stu);
+				}
+			});
+
+			/* 上一页点击事件 */
+			$(".rp1").click(function() {
+				var pages = $("#pages1").text();
+				var pageNo = $("#pageNo1").text();
+				if ('1' == pageNo) {
+					//alert("当前页为第一页!");
+				} else {
+					pageNo--;
+					getStudentByPage(pageNo, stu);
+				}
+			});
+
+			/* 阅卷时的上一页事件 */
+			$(".rp2").click(function() {
+
+				var fNum = $(".f").length;
+				var aNum = $(".a").length;
+
+				var fPageNum = 0;
+				if (fNum % 2 != 0) {
+					fPageNum = Math.floor(fNum / 2) + 1;
+				} else {
+					fPageNum = fNum / 2;
+				}
+				var pages = $("#pages2").text();
+				var pageNo = $("#pageNo2").text();
+				if ('1' == pageNo) {
+					//alert("当前页为第一页!");
+				} else {
+					if (pageNo < fPageNum) { //当前页数小于填空总页数
+						$(".quesInfo").eq(pageNo * 2 - 2).hide();
+						$(".quesInfo").eq(pageNo * 2 - 1).hide();
+						pageNo--
+						$(".quesInfo").eq(pageNo * 2 - 2).show();
+						$(".quesInfo").eq(pageNo * 2 - 1).show();
+					}else if(pageNo == fPageNum){	//当前页在填空尾页
+						if (fNum % 2 == 0){		//填空题为偶数
+							$(".quesInfo").eq(pageNo * 2 - 2).hide();
+							$(".quesInfo").eq(pageNo * 2 - 1).hide();
+							pageNo--
+							$(".quesInfo").eq(pageNo * 2 - 2).show();
+							$(".quesInfo").eq(pageNo * 2 - 1).show();
+						} else {//填空题为奇数
+							$(".quesInfo").eq(pageNo * 2 - 2).hide();
+							pageNo--
+							$(".quesInfo").eq(pageNo * 2 - 2).show();
+							$(".quesInfo").eq(pageNo * 2 - 1).show();
+						}
+					} else if (pageNo == (fPageNum + 1) && fNum % 2 == 0) { //当前页数在简答题首页，且填空为偶数
+						$(".quesInfo").eq(fNum).hide();
+						pageNo--;
+						$(".quesInfo").eq(pageNo * 2 - 2).show();
+						$(".quesInfo").eq(pageNo * 2 - 1).show();
+					} else if (pageNo == (fPageNum + 1) && fNum % 2 == 1) { //当前页数==填空页数,且填空数为奇数
+						$(".quesInfo").eq(fNum).hide();
+						pageNo--;
+						$(".quesInfo").eq(fNum - 1).show();
+					} else if (pageNo > (fPageNum + 1)) { //当前页数>填空题首页
+						var num1 = pageNo - fPageNum;
+						var num2 = fNum + num1;
+						num2--;
+						$(".quesInfo").eq(num2).hide();
+						pageNo--;
+						num2--;
+						$(".quesInfo").eq(num2).show();
+					}
+					$("#pageNo2").text(pageNo);
+				}
+			});
+			$(".np2").click(function() {
+
+				var fNum = $(".f").length;
+				var aNum = $(".a").length;
+
+				var fPageNum = 0;
+				if (fNum % 2 != 0) {
+					fPageNum = Math.floor(fNum / 2) + 1;
+				} else {
+					fPageNum = fNum / 2;
+				}
+
+				var pages = $("#pages2").text();
+				var pageNo = $("#pageNo2").text();
+				if (pages == pageNo) {
+					//alert("已在最后一页!")
+				} else {
+					if (pageNo * 2 < fNum-1) {
+						$(".quesInfo").eq(pageNo * 2 - 2).hide();
+						$(".quesInfo").eq(pageNo * 2 - 1).hide();
+						pageNo++;
+						$(".quesInfo").eq(pageNo * 2 - 2).show();
+						$(".quesInfo").eq(pageNo * 2 - 1).show();
+					}else if(pageNo * 2 == fNum - 1){
+						if(fNum % 2 == 0){
+							$(".quesInfo").eq(pageNo * 2 - 2).hide();
+							$(".quesInfo").eq(pageNo * 2 - 1).hide();
+							pageNo++;
+							$(".quesInfo").eq(pageNo * 2 - 2).show();
+							$(".quesInfo").eq(pageNo * 2 - 1).show();
+						}else{
+							$(".quesInfo").eq(pageNo * 2 - 2).hide();
+							$(".quesInfo").eq(pageNo * 2 - 1).hide();
+							pageNo++;
+							$(".quesInfo").eq(pageNo * 2 - 2).show();
+						}
+					}else if (pageNo * 2 == fNum + 1) {
+						$(".quesInfo").eq(fNum - 1).hide();
+						$(".quesInfo").eq(fNum).show();
+						pageNo++;
+					} else if (pageNo * 2 == fNum) {
+						$(".quesInfo").eq(pageNo * 2 - 2).hide();
+						$(".quesInfo").eq(pageNo * 2 - 1).hide();
+						pageNo++;
+						$(".quesInfo").eq(fNum).show();
+					} else if (pageNo > fPageNum) {
+						var num1 = pageNo - fPageNum;
+						var num2 = num1+fNum;
+						$(".quesInfo").eq(num2-1).hide();
+						pageNo++;
+						$(".quesInfo").eq(fNum + pageNo - fPageNum-1).show();
+					}
+					$("#pageNo2").text(pageNo);
+				}
+			});
+			/* 跳页点击事件 */
+			$(".jump").click(function() {
+				var pageNum = parseInt($("input[name='pageNum']").val());
+				var pages = parseInt($("#pages1").text());
+				var pageNo = parseInt($("#pageNo1").text());
+				if (pageNum > pages) {
+					alert("页数过大!");
+				} else if (pageNum == pageNo) {
+					alert("已在当前页!");
+				} else {
+					getStudentByPage(pageNum, stu);
+				}
+			});
+
+			/* 表单提交后的数据返回 */
+			$("#fileForm").ajaxForm(function(data) {
+				console.log(data);
+				alert(data.msg);
+				$(".fileTip").fadeOut(200);
+				window.location.reload();
+			});
+
+			/* 选中文件事件 */
+			$(".input-fileup").change(function() {
+				var file = $("input[type='file']").val();
+				var split = file.split("\\");
+				var fileName = split[2];
+				$("#fileName").text(fileName);
+				$("#filefield").show();
+			});
+
+			/*绑定select1 改变事件  */
+			function bindChangeSelect1() {
+				$(".select1").change(
+						function() {
+							stu.eId = $(".select1 option:selected").attr(
+									"data-value");
+							stu.stuClass = $(".select2 option:selected").attr(
+									"data-value");
+							getStudentByPage(pageNo, stu);
+						});
+			}
+			/*绑定select2 改变事件  */
+			function bindChangeSelect2() {
+				$(".select2").on(
+						'change',
+						function() {
+							stu.eId = $(".select1 option:selected").attr(
+									"data-value");
+							stu.stuClass = $(".select2 option:selected").attr(
+									"data-value");
+							getStudentByPage(pageNo, stu);
+						});
+			}
+		});
+
+		function checkedAll() {
+			alert("checked");
+		}
+
+		/* 分页查询 */
+		function getStudentByPage(pageNo, stu) {
+			stu.pageNo = pageNo + "";
+			/*学生信息表*/
+			$.ajax({
+				type : "post",
+				url : "doMark/getPaperAnswer",
+				async : false,
+				data : stu,
+				dataType : "json",
+				success : function(data) {
+					console.log(data);
+					$("#checkedAll").prop("checked", false);
+					$("tbody").empty();
+					$("#myTemplate").tmpl(data.list).appendTo("tbody");
+					$("#totals").text(data.total);
+					$("#pageNo1").text(data.pageNum);
+					$("#pages1").text(data.pages);
+					// 绑定点击事件
+					bindEvent();
+				},
+				error : function() {
+					alert("请求失败!");
+				}
+			});
+		}
+
+		/* 绑定点击事件*/
+		function bindEvent() {
+			// 阅卷事件
+			$('#table-data a[data-action="mark"]').on('click', function() {
+				var stu = {};
+				stu.stuNo = $(this).attr('data-id');
+				stu.eId = $(this).parent().children().eq(1).val();
+				stu.id = $(this).parent().children().eq(2).val();
+				console.log("stuid" + stu.id);
+				$(".tip").fadeIn(100);
+				$.ajax({
+					type : "post",
+					url : "doMark/getAnswer",
+					async : true,
+					data : stu,
+					success : function(data) {
+						$(".quesList").empty();
+						console.log(data);
+						$("#quesTmpl").tmpl(data.listf).appendTo(".quesList");
+						$("#quesTmpl").tmpl(data.lista).appendTo(".quesList");
+						$("#pageNo2").text(1);
+						var length = 0;
+						if (data.listf.length % 2 != 0) {
+							length = Math.floor(data.listf.length / 2) + 1;
+						} else {
+							length = data.listf.length / 2;
+						}
+						pNum = length + data.lista.length;
+						$("#pages2").text(pNum);
+						$(".tip-form input[name='stuNo']").val(data.stuNo);
+						$(".tip-form input[name='eId']").val(data.eId);
+						$(".tip-form input[name='gId']").val(data.id);
+						if(length==1){
+							$(".quesInfo").eq(0).show();
+						}else{
+							$(".quesInfo").eq(0).show();
+							$(".quesInfo").eq(1).show();
+						}
+						//window.location.reload();
+					},
+					error : function() {
+						alert("阅卷请求失败!");
+					}
+
+				});
+			});
+		}
+		/* 表单提交前验证 */
+		function checkFile(form) {
+			var file = $("input[type='file']").val();
+			if (file == null || file == '') {
+				$("#fileName").text("请选择文件");
+				$("#filefield").show();
+				return false;
+			}
+			return true;
+		}
+	</script>
+</body>
+</html>

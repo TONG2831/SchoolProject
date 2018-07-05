@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>修改试卷</title>
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/jquery-3.3.1.js"></script>
+<script type="text/javascript" src="js/jquery.form.js"></script>
+<script src="js/jquery.tmpl.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+
+		$(".tiptop a").click(function() {
+			$(".tip").fadeOut(200);
+		});
+
+		$("#btn-cancel").click(function() {
+			$(".tip").fadeOut(100);
+		});
+
+	});
+</script>
+
+
+</head>
+
+<body>
+
+	<div class="place">
+		<span>位置：</span>
+		<ul class="placeul">
+			<li><a href="#">首页</a></li>
+			<li><a href="#">试题管理</a></li>
+			<li><a href="#">试卷管理</a></li>
+			<li><a href="#">试卷修改</a></li>
+		</ul>
+	</div>
+
+	<div class="rightinfo">
+		<div id="paperTitle">
+			<label
+				style="font-weight: 1000; font-size: 15px; display: inline-block; float: left; padding-top: 7px; align-content: center;">
+				&nbsp;当前修改的试卷:&nbsp;&nbsp;</label>
+		</div>
+
+		<br> <br> <br> <br>
+		<div class="tools">
+
+			<ul class="toolbar">
+
+				<li><label>题目类型:</label>
+					<div class="vocation">
+						<select class="select1 selType">
+							<option data-value='all' selected>全部</option>
+							<option data-value='c'>单选</option>
+							<option data-value='dc'>多选</option>
+							<option data-value='j'>判断</option>
+							<option data-value='f'>填空</option>
+							<option data-value='a'>简答</option>
+						</select>
+					</div></li>
+
+
+				<li><label>搜索輸入:</label> <input name="searchText" type="text"
+					class="scinput" /></li>
+
+				<li><label>&nbsp;</label> <input name="" type="button"
+					class="scbtn scbtn1" value="查询" /></li>
+
+			</ul>
+
+			<ul class="toolbar1">
+				<li class="deleteSome"><span><img src="images/t03.png" /></span>删除</li>
+				<div class="dropdown">
+					<a class="dropbtn showTip"><span><img src="images/t01.png" /></span>添加</a>
+				</div>
+			</ul>
+
+		</div>
+
+		<table class="tablelist tab1" id="table-data">
+			<thead>
+				<tr>
+					<th><input id="checkedAll" type="checkbox" value="all" /></th>
+					<th>试题编号<i class="sort"><img src="images/px.gif" /></i></th>
+					<th>试题内容</th>
+					<th>试题答案</th>
+					<th>试题类型</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+
+			</tbody>
+		</table>
+
+		<div class="pagin">
+			<div class="message">
+				共<i class="blue" id="totals"></i>条记录，当前显示第&nbsp;<i class="blue"
+					id="pageNo1">&nbsp;</i>页, 共<i class="blue" id="pages1"></i>页
+			</div>
+			<ul class="paginList">
+				<li class="paginItem"><a href="javascript:;"> <span
+						class="pagepre"></span>
+				</a></li>
+				<li class="paginItem"><a href="#" class="prePage prePage1">上一页</a></li>
+				<li class="paginItem"><a href="#" class="nextPage nextPage1">下一页</a></li>
+				<li class="paginItem"><a href="javascript:;"> <span
+						class="pagenxt"></span>
+				</a></li>
+			</ul>
+			<div class="pageJump">
+				<button class="jump jump1" style="float: left">跳</button>
+				&nbsp;<input type="text" name="pageNum" class="pageInput1">&nbsp;页
+			</div>
+		</div>
+
+		<!-- tip 添加题目 -->
+		<div class="tip" style="width: 800px">
+			<div class="tiptop">
+				<span>选择题目</span> <a></a>
+			</div>
+			<div class="tip-form">
+				<form name="" action="#" method="get">
+					<fieldset>
+						<legend></legend>
+						<div>
+							<div class="tools">
+
+								<ul class="toolbar">
+									<li><label>题目类型:</label>
+										<div class="vocation">
+											<select class="select1 selectType">
+												<option data-value='all' selected>全部</option>
+												<option data-value='c'>选择</option>
+												<option data-value='j'>判断</option>
+												<option data-value='f'>填空</option>
+												<option data-value='a'>简答</option>
+											</select>
+										</div></li>
+
+									<li><label>试卷:</label>
+										<div class="vocation">
+											<select class="select2 selectPaper">
+												<option data-value='all' selected>全部</option>
+											</select>
+										</div></li>
+
+									<li><label>搜索输入:</label> <input name="searchText"
+										type="text" class="scinput" /></li>
+
+									<li><label>&nbsp;</label> <input name="" type="button"
+										class="scbtn scbtn2" value="查询" /></li>
+								</ul>
+								<ul class="toolbar1">
+									<div class="dropdown">
+										<a class="dropbtn addToPaper" id="addToPaper"><span><img
+												src="images/t01.png" /></span>添加</a>
+									</div>
+								</ul>
+							</div>
+
+							<table class="tablelist tabtip" id="table-data"
+								style="width: 90%;">
+								<thead>
+									<tr>
+										<th><input id="tipcheckedAll" type="checkbox" value="all" /></th>
+										<th>试题编号<i class="sort"><img src="images/px.gif" /></i></th>
+										<th>试题内容</th>
+										<th>试题答案</th>
+										<th>试题类型</th>
+									</tr>
+								</thead>
+								<tbody>
+
+								</tbody>
+							</table>
+
+							<div class="pagin" style="width: 90%;">
+								<div class="message">
+									共<i class="blue" id="totals"></i>条记录，当前显示第&nbsp;<i class="blue"
+										id="pageNo2">&nbsp;</i>页, 共<i class="blue" id="pages2"></i>页
+								</div>
+								<ul class="paginList">
+									<li class="paginItem"><a href="javascript:;"> <span
+											class="pagepre"></span>
+									</a></li>
+									<li class="paginItem"><a href="#" class="prePage">上一页</a></li>
+									<li class="paginItem"><a href="#" class="nextPage">下一页</a></li>
+									<li class="paginItem"><a href="javascript:;"> <span
+											class="pagenxt"></span>
+									</a></li>
+								</ul>
+								<!-- <div class="pageJump">
+									<button class="jump jump2" style="float: left">跳</button>
+									&nbsp;<input type="text" name="pageNum" class="pageInput2">&nbsp;页
+								</div> -->
+							</div>
+
+						</div>
+						<!-- <div class="formitm formitm-1">
+							<button id="btn-add" class="u-btn" type="button">确定</button>
+							<button id="btn-cancel" class="u-btn" type="button">取消</button>
+						</div> -->
+					</fieldset>
+				</form>
+			</div>
+		</div>
+		<!-- tip End -->
+
+	</div>
+
+	<!--tab1模板-->
+	<script id="myTemplate" type="text/x-jquery-tmpl">
+			<tr>
+				<td><input type="checkbox" value=${qId} /></td>
+				<td>${qId}</td>
+				<td title='${qContent}'>${qContent}</td>
+				<td>${qAnswer}</td>
+				{{if qType=='c'}}
+					<td>选择题</td>
+				{{else qType=='j'}}
+					<td>判断题</td>
+				{{else qType=='f'}}
+					<td>填空题</td>
+				{{else qType=='dc'}}
+					<td>多选题</td>
+				{{else qType=='a'}}
+					<td>简答题</td>
+				{{/if}}
+				<td>
+					<a href="#" class="tablelink deleteQues" data-id="${qId}" data-action="delete">删除</a>
+				</td>
+			</tr>
+	</script>
+
+	<!-- tip的模板 -->
+	<script id="tmplForTip" type="text/x-jquery-tmpl">
+			<tr>
+				<td><input type="checkbox" value=${qId} /></td>
+				<td>${qId}</td>
+				<td title='${qContent}'>${qContent}</td>
+				<td>${qAnswer}</td>
+				{{if qType=='c'}}
+					<td>选择题</td>
+				{{else qType=='j'}}
+					<td>判断题</td>
+				{{else qType=='f'}}
+					<td>填空题</td>
+				{{else qType=='dc'}}
+					<td>多选题</td>
+				{{else qType=='a'}}
+					<td>简答题</td>
+				{{/if}}
+			</tr>
+	</script>
+
+	<!-- JQuery -->
+	<script type="text/javascript">
+		$('.tablelist tbody tr:odd').addClass('odd');
+
+		$(function() {
+
+			//隐藏tip中的修改按钮
+			$("#btn-alter").hide();
+
+			/* 初始化试题查询参数 */
+			var pageNo = 1;
+			var ques = {};
+			ques.qType = "all";
+			ques.pName = "all";
+			ques.searchText = "";
+			ques.pageNo = pageNo;
+
+			/* 适用于tip */
+			var tipNo = 1;
+			var tip = {};
+			tip.qType = "all";
+			tip.pName = "all";
+			tip.searchText = "";
+			tip.pageNo = pageNo;
+
+			// 显示试卷名称
+			$.ajax({
+				type : "post",
+				url : "doPaper/getPId",
+				async : false,
+				dataType : "json",
+				success : function(data) {
+					console.log(data);
+					ques.pName = data.pId;
+					$("#paperTitle label").append(data.pName);
+					getQInfo(ques);
+				},
+				error : function() {
+
+				}
+			});
+
+			/*查询所有试卷*/
+			$.ajax({
+				type : "post",
+				url : "doQues/getPInfo",
+				async : true,
+				dataType : "json",
+				success : function(data) {
+					$.each(data, function(i, val) {
+						$(".selectPaper").append(
+								"<option data-value="+val.pId+">" + val.pName
+										+ "</option>");
+					});
+				},
+				error : function() {
+					alert("请求失败!");
+				}
+
+			});
+
+			/* tip窗口显示 */
+			$(".showTip").click(tip, function(event) {
+				console.log("tip窗口显示");
+				getQInfo2(event.data);
+				$(".tip").fadeIn(100);
+			});
+			
+			/* 将选中试题添加到试卷中 */
+			$(".addToPaper").click(ques, function(event){
+				console.log("addToPaper");
+				console.log(event.data.pName);
+				
+				var qId = "";
+				$(".tip tbody input:checked").each(function() {
+					console.log($(this).val());
+					qId += $(this).val() + ".";
+				});
+				var data = {};
+				data.qId = qId;
+				data.pId = event.data.pName;
+				$.ajax({
+					type : "post",
+					url : "doQues/addQuesAndPaper",
+					async :true,
+					data : data,
+					success : function() {
+						$(".tip").fadeOut(200);
+						window.location.reload();
+					},
+					error : function(){
+						
+					}
+				});
+			});
+			
+
+			/* ---全选--- */
+
+			// tab1
+			$(".tab1 #checkedAll").change(function() {
+				var c = $(".tab1 #checkedAll").prop("checked");
+				console.log(c);
+				$(".tab1 tbody input").prop("checked", c);
+			});
+			// tip
+			$("#tipcheckedAll").change(function() {
+				var c = $("#tipcheckedAll").prop("checked");
+				console.log(c);
+				$(".tip tbody input").prop("checked", c);
+			});
+
+			/* 批量删除 */
+			$(".deleteSome").click(ques, function(event) {
+				var qId = "";
+				$(".tab1 tbody input:checked").each(function() {
+					console.log($(this).val());
+					qId += $(this).val() + ".";
+				})
+				var ques = {};
+				ques.qId = qId;
+				ques.pId = event.data.pName;
+				$.ajax({
+					type : "post",
+					url : "doQues/deleteSomeQuesAndPaper",
+					async : true,
+					data : ques,
+					success : function() {
+						window.location.reload();
+					},
+					error : function() {
+					}
+				});
+			});
+
+			/* 按条件搜索信息 */
+			// 主页面搜索
+			$(".scbtn1").click(function() {
+				ques.qType = $(".select1 option:selected").attr("data-value");
+				ques.searchText = $("input[name='searchText']").val();
+				getQInfo(ques);
+			});
+
+			$(".scbtn2").click(
+					function() {
+						tip.qType = $(".tip .select1 option:selected").attr(
+								"data-value");
+						tip.pId = $(".tip .select2 option:selected").attr(
+								"data-value");
+						tip.searchText = $(".tip input[name='searchText']")
+								.val();
+						console.log(tip);
+						getQInfo2(tip);
+					});
+
+			/* 下一页点击事件 */
+			$(".nextPage1").click(function() {
+				var pages = $("#pages1").text();
+				var pageNo = $("#pageNo1").text();
+				if (pages == pageNo) {
+					//alert("已在最后一页!")
+				} else {
+					ques.pageNo = ++pageNo;
+					console.log(pageNo);
+					getQInfo(ques);
+				}
+			});
+
+			$(".tip .nextPage").click(function() {
+				var pages = $("#pages2").text();
+				var pageNo = $("#pageNo2").text();
+				if (pages == pageNo) {
+					//alert("已在最后一页!")
+				} else {
+					tip.pageNo = ++pageNo;
+					console.log(pageNo);
+					getQInfo2(tip);
+				}
+			});
+
+			/* 上一页点击事件 */
+			$(".prePage1").click(function() {
+				var pages = $("#pages1").text();
+				var pageNo = $("#pageNo1").text();
+				if ('1' == pageNo) {
+					//alert("当前页为第一页!");
+				} else {
+					ques.pageNo = --pageNo;
+					getQInfo(ques);
+				}
+			});
+
+			$(".tip .prePage").click(function() {
+				var pages = $("#pages2").text();
+				var pageNo = $("#pageNo2").text();
+				if ('1' == pageNo) {
+					//alert("当前页为第一页!");
+				} else {
+					tip.pageNo = --pageNo;
+					getQInfo2(tip);
+				}
+			});
+
+			/* 跳页点击事件 */
+			$(".jump1").click(function() {
+				var pageNum = $(".pageInput1").val();
+				console.log("页数:" + pageNum);
+				var pages = $("#pages1").text();
+				var pageNo = $("#pageNo1").text();
+				console.log(pages + "==" + pageNo);
+				if (parseInt(pageNum) > parseInt(pages)) {
+					alert("页数过大!");
+				} else if (parseInt(pageNum) == parseInt(pageNo)) {
+					alert("已在当前页!");
+				} else {
+					ques.pageNo = pageNum;
+					console.log(ques);
+					getQInfo(ques);
+				}
+
+			});
+
+			$(".jump2").click(function() {
+				var pageNum = $(".pageInput2").val();
+				console.log("页数:" + pageNum);
+				var pages = $("#pages2").text();
+				var pageNo = $("#pageNo2").text();
+				console.log(pages + "==" + pageNo);
+				if (parseInt(pageNum) > parseInt(pages)) {
+					alert("页数过大!");
+				} else if (parseInt(pageNum) == parseInt(pageNo)) {
+					alert("已在当前页!");
+				} else {
+					tip.pageNo = pageNum;
+					console.log(tip);
+					getQInfo2(tip);
+				}
+
+			});
+
+			/* 下拉框事件 */
+			// tab1
+			$(".selType").change(function() {
+				ques.qType = $(".selType option:selected").attr("data-value");
+				getQInfo(ques);
+			});
+			
+			
+			// tip
+			$(".selectType").change(
+					function() {
+						tip.qType = $(".selectType option:selected").attr(
+								"data-value");
+						tip.pName = $(".selectPaper option:selected").attr(
+								"data-value");
+						console.log(tip.pName);
+						getQInfo2(tip);
+					});
+
+			$(".selectPaper").change(
+					function() {
+						tip.qType = $(".selectType option:selected").attr(
+								"data-value");
+						tip.pName = $(".selectPaper option:selected").attr(
+								"data-value");
+						console.log(tip.pName);
+						getQInfo2(tip);
+					});
+
+		});
+
+		/* 分页查询信息 */
+		function getQInfo(ques) {
+			$.ajax({
+				type : "post",
+				url : "doQues/getAllQInfo",
+				async : false,
+				data : ques,
+				dataType : "json",
+				success : function(data) {
+					console.log(data);
+					$(".tab1 tbody").empty();
+					$("#myTemplate").tmpl(data.list).appendTo(".tab1 tbody");
+					$("#totals").text(data.total);
+					$("#pageNo1").text(data.pageNum);
+					$("#pages1").text(data.pages);
+					// 绑定点击事件
+					bindEvent(ques);
+				},
+				error : function() {
+					alert("请求失败!");
+				}
+			});
+		}
+
+		/* tip的分页查询信息 */
+		function getQInfo2(ques) {
+			$.ajax({
+				type : "post",
+				url : "doQues/getAllQInfo",
+				async : false,
+				data : ques,
+				dataType : "json",
+				success : function(data) {
+					console.log(data);
+					$(".tip tbody").empty();
+					$("#tmplForTip").tmpl(data.list).appendTo(".tip tbody");
+					$(".tip #totals").text(data.total);
+					$("#pageNo2").text(data.pageNum);
+					$("#pages2").text(data.pages);
+					// 绑定点击事件
+				},
+				error : function() {
+					alert("请求失败!");
+				}
+			});
+		}
+
+		/* 绑定点击事件*/
+		function bindEvent(ques) {
+			// 删除事件
+			$('#table-data a[data-action="delete"]').on('click', function() {
+				var paper = {};
+				paper.qId = $(this).attr('data-id');
+				paper.pId = ques.pName;
+				console.log("试卷名:" + ques.pName);
+				$.ajax({
+					type : "post",
+					url : "doQues/deleteQuesAndPaper",
+					async : true,
+					data : paper,
+					success : function() {
+						window.location.reload();
+					},
+					error : function() {
+						alert("请求失败!")
+					}
+
+				});
+			});
+		}
+	</script>
+</body>
+
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+
+.grade {
+	border: 1px solid lightgrey;
+	width: 300px;
+	height: 300px;
+	float:left;
+	margin-left: 30px;
+	margin-bottom: 10px;
+	cursor:pointer;
+	
+}
+.grade:hover{
+	box-shadow:0 0 6px #999;
+}
+
+.grade ul li {
+	line-height: 30px;
+	font-size: 13pt;
+	font-weight: bold;
+	margin-left: 20px;
+	font-family: serif;
+}
+
+.grade ul {
+	margin: auto;
+	margin-top: 30px
+}
+
+label {
+	margin-right: 15px;
+}
+</style>
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/jquery.tmpl.js" />
+<script type="text/javascript">
+	$(document).ready(function() {
+
+		$(".tiptop a").click(function() {
+			$(".tip").fadeOut(200);
+		});
+
+		$(".sure").click(function() {
+			$(".tip").fadeOut(100);
+		});
+
+		$(".cancel").click(function() {
+			$(".tip").fadeOut(100);
+		});
+	});
+</script>
+</head>
+
+<body>
+
+	<div class="place">
+		<span>位置：</span>
+		<ul class="placeul">
+			<li><a href="#">首页</a></li>
+			<li><a href="#">在线考试</a></li>
+			<li><a href="#">成绩查询</a></li>
+		</ul>
+	</div>
+
+	<div class="rightinfo">
+
+		<div class="tools">
+			<b>考试成绩如下：</b>
+		</div>
+		<!-- <div class="grade">
+			<ul>
+				<li><label>考试名:</label>江苏高考</li>
+				<li><label>试卷:</label>2019-江苏高考试卷</li>
+				<li><label>客观题分数:</label>59分</li>
+				<li><label>主观题分数:</label>未阅卷</li>
+				<li><label>总分数</label>59分</li>
+			</ul>
+		</div> -->
+	</div>
+
+	<!--模板-->
+	<script id="myTemplate" type="text/x-jquery-tmpl">
+		<div class="grade">
+			<ul>
+				<input type="hidden" value=${eId} />
+				<li class="eName"><label>考试名:</label>${eName}</li>
+				<li><label>试卷:</label>${pName}</li>
+				<li><label>客观题分数:</label>${objScore}分</li>
+				<li>
+					<label>主观题分数:</label>
+					{{if subScore == null}}
+						主观题未阅卷
+					{{else}}
+						${subScore}分
+					{{/if}}
+				</li>
+				<li><label>总分数</label>${totalScore}分</li>
+			</ul>
+		</div>	
+		</script>
+	<script type="text/javascript">
+		$('.tablelist tbody tr:odd').addClass('odd');
+
+		$(function() {
+
+			// 获取学号
+			var stuNo = $(".user input",window.parent.frames["topFrame"].document).val();
+			var data = {};
+			data.stuNo = stuNo;
+			$.ajax({
+				type : "post",
+				url : "doGrade/getGrade",
+				async : true,
+				data : data,
+				success : function(data) {
+					console.log(data);
+					$("#myTemplate").tmpl(data).appendTo(".rightinfo");
+					bindevent();
+				},
+				error : function() {
+					alert("请求失败!");
+				}
+			});
+			
+			
+			// 事件--点击事件获取详细信息
+			
+			
+			function bindevent(){
+				$(".grade").click(function(){
+					console.log("查看成绩信息");
+					var stuNo = $(".user input[name='stuNo']",window.parent.frames["topFrame"].document).val();
+					var eId = $(this).children().children().eq(0).val();
+					$(".user input[name='eId']",window.parent.frames["topFrame"].document).val(eId);
+					var data = {};
+					data.stuNo = stuNo;
+					data.eId = eId;
+					window.location.href="stucheckAnswer.html";
+				});
+			}
+		});
+	</script>
+</body>
+
+</html>

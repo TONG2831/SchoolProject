@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.test.dao.StudentDao">
+
+	<!-- 查询所有院系名称 -->
+	<select id="getAllStuDepartment" resultType="java.lang.String">
+		SELECT distinct studepartment FROM student
+	</select>
+	
+	<select id="getAllClassByDep" resultType="java.lang.String" parameterType="java.lang.String">
+		SELECT distinct stuclass From student where studepartment = #{studepartment}
+	</select>
+	
+	<!-- 查询所有班级名称 -->
+	<select id="getAllStuClass" resultType="java.lang.String">
+		SELECT distinct stuclass FROM student
+	</select>
+
+	<!-- 查询所有学生信息 -->
+	<select id="getAllStudent" resultType="Student">
+		SELECT * FROM student
+	</select>
+
+	<!-- 插入学生 -->
+	<insert id="addStudent" parameterType="Student">
+		insert into student(stuNo,stuName,stuSex,stuClass,stuDepartment)
+		values(#{stuNo},#{stuName},#{stuSex},#{stuClass},#{stuDepartment})
+	</insert>
+
+	<!-- 按学号查询 -->
+	<select id="getStudent" resultType="Student">
+		select * from student where stuNo = #{stuNo};
+	</select>
+	
+	<select id="selectByClass" resultType="Student">
+		select * from student where stuClass = #{stuClass}
+	</select>
+	
+	<!-- 多条件查询 -->
+	<select id="selectStuByConds" resultType="Student">
+		select * from student
+		<where>
+			<if test="stuClass != 'all'">
+				stuClass = #{stuClass}
+			</if>
+			<if test="stuDepartment != 'all'">
+				AND stuDepartment = #{stuDepartment}
+			</if>
+			<if test="searchText != ''">
+				<if test="searchCond == 'stuNo'">
+					AND stuNo like "%"#{searchText}"%"
+				</if>
+				<if test="searchCond == 'stuName'">
+					AND stuName like concat(concat("%",#{searchText}),"%")
+				</if>
+			</if>
+		</where>
+	</select>
+
+	<!-- 修改学生信息 -->
+	<update id="updateStudent" parameterType="Student">
+		UPDATE student set
+		stuName=#{stuName},stuSex=#{stuSex},stuClass=#{stuClass},stuDepartment=#{stuDepartment}
+		where stuNo=#{stuNo}
+	</update>
+
+	<!-- 删除学生 -->
+	<delete id="deleteStudent">
+		DELETE FROM student where stuNo=#{stuNo}
+	</delete>
+	
+	
+</mapper>

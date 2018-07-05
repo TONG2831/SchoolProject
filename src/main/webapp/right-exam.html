@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<title></title>
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<link href="css/fSelect.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/jquery-3.3.1.js"></script>
+<script type="text/javascript" src="js/jquery.form.js"></script>
+<script src="js/jquery.tmpl.js"></script>
+<script type="text/javascript" src="js/fSelect.js"></script>
+<style type="text/css">
+.container {
+	margin-top: 30px;
+	text-align: left;
+	font-size: 14px;
+}
+
+.container label {
+	line-height: 30px;
+	margin-left: 30px;
+	margin-right: 30px;
+	font-size: 14px;
+}
+
+.title label {
+	font-size: 15pt;
+	font-family: "微软雅黑";
+	font-weight: bold;
+}
+
+.title {
+	margin-bottom: 15px;
+}
+
+.container input {
+	width: 220px;
+	height: 32px;
+	line-height: 32px;
+	border-top: solid 1px #a7b5bc;
+	border-left: solid 1px #a7b5bc;
+	border-right: solid 1px #ced9df;
+	border-bottom: solid 1px #ced9df;
+	background: url(images/inputbg.gif) repeat-x;
+	margin-bottom: 10px;
+	text-indent: 10px;
+}
+
+.container select {
+	width: 110px;
+	height: 32px;
+	line-height: 32px;
+	border-top: solid 1px #a7b5bc;
+	border-left: solid 1px #a7b5bc;
+	border-right: solid 1px #ced9df;
+	border-bottom: solid 1px #ced9df;
+	background: url(images/inputbg.gif) repeat-x;
+	margin-bottom: 10px;
+	text-indent: 10px;
+}
+
+hr {
+	margin-left: 30px;
+}
+
+.container button {
+	border: 0;
+	margin: 0;
+	padding: 0;
+	width: 137px;
+	height: 35px;
+	background: url(images/btnbg.png) no-repeat;
+	font-size: 14px;
+	font-weight: bold;
+	color: #fff;
+	cursor: pointer;
+	margin-left: 130px;
+}
+
+.errorInfo {
+	display: inline-block;
+}
+
+.score input {
+	width: 30px;
+	height: 17px;
+}
+
+.score1 {
+	margin-left: 126px;
+}
+</style>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$(".tiptop a").click(function() {
+			$(".tip").fadeOut(200);
+		});
+
+		$("#btn-cancel").click(function() {
+			$(".tip").fadeOut(100);
+		});
+
+	});
+</script>
+
+</head>
+
+<body>
+
+	<div class="place">
+		<span>位置：</span>
+		<ul class="placeul">
+			<li><a href="#">首页</a></li>
+			<li><a href="#">考试管理</a></li>
+			<li><a href="#">发布考试</a></li>
+		</ul>
+	</div>
+	<div class="container">
+		<div class="title">
+			<label>发布考试</label>
+		</div>
+		<hr style="border: 3 double #987cb9" align="left" width="30%"
+			color="grey" size="3">
+		<br> <br>
+		<div>
+			<label>考试名称*</label> <input type="text" name="testName"
+				placeholder="请输入考试名称" /><span style="color: red;" class="errorInfo"></span>
+		</div>
+		<div>
+			<label>选择试卷*</label> <input type="hidden" name="paperId" /> <input
+				type="text" name="paperName" readonly="readonly"
+				placeholder="点击选择试卷" /><span style="color: red;" class="errorInfo"></span>
+		</div>
+		<div>
+			<label style="float: left;">选择考生*</label>
+
+			<!-- 下拉菜单的复选 -->
+			<div class="fs-wrap multiple">
+				<div class="fs-dropdown hidden">
+					<div class="fs-options">
+						<div class="fs-optgroup">
+							<div class="fs-optgroup-label">班级</div>
+						</div>
+					</div>
+				</div>
+				<select class="demo hidden" multiple="multiple">
+					<optgroup label="班级">
+						<!-- <option></option> -->
+					</optgroup>
+				</select>
+			</div>
+			<span style="color: red;" class="errorInfo"></span>
+		</div>
+		<div class="score" style="margin-top: 10px;">
+			<label>题型分数*</label> 
+			单选题:<input type="text" name="c"  value='0'>&nbsp;&nbsp;
+			多选题:<input type="text" name="dc"  value='0'>&nbsp;&nbsp;
+			判断题:<input type="text" name="j"  value='0'>
+			<div class="score1">
+				填空题:<input type="text" name="f"  value='0'>&nbsp;&nbsp;
+				简答题:<input type="text" name="a" value='0'>
+			</div>
+		</div>
+		<div>
+			<label>考试时间*</label> <input type="text" name="time" placeholder="分钟" /><span
+				style="color: red;" class="errorInfo"></span>
+		</div>
+		<div class="container-btn">
+			<button class="create-btn">马上发布</button>
+		</div>
+	</div>
+
+
+	<!-- tip 试卷 -->
+	<div class="tip" style="width: 550px">
+		<div class="tiptop">
+			<span>选择试卷</span> <a></a>
+		</div>
+
+		<div class="tip-form">
+			<form name="" action="#" method="get">
+				<fieldset>
+					<legend></legend>
+					<div>
+						<div class="tools">
+
+							<ul class="toolbar">
+								<li><label>&nbsp;&nbsp;试卷名称:</label> <input
+									name="searchText" type="text" class="scinput" /></li>
+
+								<li><label>&nbsp;</label> <input name="" type="button"
+									class="scbtn" value="查询" /></li>
+
+							</ul>
+						</div>
+
+						<table class="tablelist tabPaper" id="table-data"
+							style="width: 90%;">
+							<thead>
+								<tr>
+									<th><input id="checkedAll" type="checkbox" value="all" /></th>
+									<th>试卷编号<i class="sort"><img src="images/px.gif" /></i></th>
+									<th>试卷名称</th>
+								</tr>
+							</thead>
+							<tbody>
+
+							</tbody>
+						</table>
+
+						<div class="pagin" style="width: 90%;">
+							<div class="message">
+								当前第&nbsp;<i class="blue" id="pageNo">&nbsp;</i>页, 共<i
+									class="blue" id="pages"></i>页
+							</div>
+							<ul class="paginList">
+								<li class="paginItem"><a href="javascript:;"> <span
+										class="pagepre"></span>
+								</a></li>
+								<li class="paginItem"><a href="#" class="prePage">上一页</a></li>
+								<li class="paginItem"><a href="#" class="nextPage">下一页</a></li>
+								<li class="paginItem"><a href="javascript:;"> <span
+										class="pagenxt"></span>
+								</a></li>
+							</ul>
+							<div class="pageJump">
+								<button class="jump" style="float: left">跳</button>
+								&nbsp;<input type="text" name="pageNum">&nbsp;页
+							</div>
+						</div>
+
+					</div>
+					<div class="formitm formitm-1">
+						<button id="btn-add" class="u-btn" type="button">确定</button>
+						<button id="btn-cancel" class="u-btn" type="button">取消</button>
+					</div>
+				</fieldset>
+			</form>
+		</div>
+	</div>
+
+	<!--模板-->
+	<script id="myTemplate" type="text/x-jquery-tmpl">
+			<tr>
+				<td><input type="radio" value=${pId} name="paperId" /></td>
+				<td>${pId}</td>
+				<td>${pName}</td>
+			</tr>
+	</script>
+
+	<script type="text/javascript">
+		$(function() {
+			var pageNo = 1;
+			var paper = {};
+			paper.searchText = "";
+			paper.pageNo = pageNo;
+
+			/* -----初始化页面信息----- */
+			/* /*查询所有院系*/
+			/* $.ajax({
+				type : "post",
+				url : "doStu/getDep",
+				async : true,
+				success : function(data) {
+					$.each(data, function(i, val) {
+						$("#selDepartment").append("<option data-value="+val+">" + val + "</option>");
+					});
+				},
+				error : function() {
+					alert("请求失败!");
+				}
+
+			}); */
+
+			/*查询所有班级*/
+			$.ajax({
+				type : "post",
+				url : "doStu/getClass",
+				async : true,
+				success : function(data) {
+					$.each(data, function(i, val) {
+						$(".demo optgroup").append(
+								"<option value="+val+">" + val + "</option>");
+					});
+					// 调用fSelect.js,初始化,下拉菜单
+					$('.demo').fSelect();
+				},
+				error : function() {
+					alert("请求失败!");
+				}
+
+			});
+
+			/* 班级下拉框的动态显示 */
+			/* $("#selDepartment").change(function(){
+				var stu = {};
+				stu.stuDepartment = $("#selDepartment").val();
+				$.ajax({
+					type : "post",
+					url : "doStu/getClassByDep",
+					async : true,
+					data : stu,
+					success : function(data) {
+						console.log(data);
+						//$("#selClass").empty();
+						//$("#selClass").append("<option value='all'>全部</option>");
+						$.each(data, function(i, val) {
+							$("#selClass").append("<option>" + val + "</option>");
+						});
+					},
+					error : function() {
+						alert("请求失败!");
+					}
+
+				});
+			});  */
+
+			/* 模态框选择试卷 */
+			$("input[name='paperName']").click(function() {
+				console.log("选择试卷");
+				getPInfo(paper);
+				$(".tip").fadeIn(100);
+			});
+
+			/* 试卷选中回填 */
+			$("#btn-add").click(function() {
+				var $paperId = $("input[name='paperId']:checked");
+				var paperName = $paperId.parent().next().next().text();
+				var paperId = $paperId.val();
+				console.log(paperId);
+				console.log(paperName);
+				$("input[name='paperId']").val(paperId);
+				$("input[name='paperName']").val(paperName);
+
+				$(".tip").fadeOut(200);
+			});
+
+			/* 创建考试 */
+			$(".create-btn").click(
+					function() {
+						var testName = $("input[name='testName']").val();
+						var paperId = $("input[name='paperId']").val();
+						var selClass = $(".demo").val();
+						var time = $("input[name='time']").val();
+
+						//获取题目分值
+						var c = $("input[name='c']").val();
+						var dc = $("input[name='dc']").val();
+						var f = $("input[name='f']").val();
+						var j = $("input[name='j']").val();
+						var a = $("input[name='a']").val();
+						
+						// 错误消息提示置空
+						$(".errorInfo").empty();
+
+						if (testName == '' || testName == undefined) {
+							$("input[name='testName']").next().text("请输入试卷名!!!");
+							console.log("输入试卷名");
+						} else if (paperId == '' || paperId == undefined) {
+							$("input[name='paperName']").next().text("请选择试卷!!!");
+						} else if (selClass.length == 0) {
+							$(".fs-wrap").next().text("请选择考试学生,可以多选");
+						} else if (time == '' || time == undefined) {
+							$("input[name='time']").next().text("请输入考试时间,注意时间以【分钟】为单位!!!");
+						} else {
+							// 获取考生名单
+							var stuList= "";
+							for(var i = 0; i<selClass.length;i++  )
+							{
+								stuList += "-"+selClass[i];	
+							}
+							
+							var exam = {};
+							exam.eName = testName;
+							exam.pId = paperId;
+							exam.stuList = stuList;
+							exam.eTime = time;
+							exam.cScore = c;
+							exam.dcScore = dc;
+							exam.jScore = j;
+							exam.fScore = f;
+							exam.aScore = a;
+
+							$.ajax({
+								type : "post",
+								url : "doExam/createExam",
+								async : true,
+								data : exam,
+								success : function(data) {
+									console.log(data);
+									if(data == "exist"){
+										$("input[name='testName']").next()
+										.text("该名称已存在，请重新输入！");
+									}else{
+										alert(data);
+										window.location.reload();
+									}
+								},
+								error : function() {
+									alert("请求失败!");
+								}
+
+							});
+						}
+
+					});
+
+			/* 分页事件 --------------*/
+
+			/* 按条件搜索试卷信息 */
+			$(".scbtn").click(function() {
+				paper.searchText = $("input[name='searchText']").val();
+				getPInfo(paper);
+			});
+
+			/* 下一页点击事件 */
+			$(".nextPage").click(function() {
+				var pages = $("#pages").text();
+				var pageNo = $("#pageNo").text();
+				if (pages == pageNo) {
+					//alert("已在最后一页!")
+				} else {
+					paper.pageNo = ++pageNo;
+					getPInfo(paper);
+				}
+			});
+
+			/* 上一页点击事件 */
+			$(".prePage").click(function() {
+				var pages = $("#pages").text();
+				var pageNo = $("#pageNo").text();
+				if ('1' == pageNo) {
+					//alert("当前页为第一页!");
+				} else {
+					paper.pageNo = --pageNo;
+					getPInfo(paper);
+				}
+			});
+
+			/* 跳页点击事件 */
+			$(".jump").click(function() {
+				var text = $("input[name='pageNum']").val().trim();
+				console.log(text);
+				if (text == '' || text == undefined) {
+					console.log("输入页数");
+				} else {
+					var pageNum = parseInt(text);
+					var pages = parseInt($("#pages").text());
+					var pageNo = parseInt($("#pageNo").text());
+					console.log(pageNum);
+					if (pageNum > pages) {
+						//alert("页数过大!");
+					} else if (pageNum == pageNo) {
+						//alert("已在当前页!");
+					} else {
+						paper.pageNo = pageNum;
+						getPInfo(paper);
+					}
+				}
+
+			});
+
+		});
+
+		function getPInfo(paper) {
+			$.ajax({
+				type : "post",
+				url : "doPaper/getPaper",
+				async : false,
+				data : paper,
+				dataType : "json",
+				success : function(data) {
+					console.log(data);
+					$(".tabPaper tbody").empty();
+					$("#myTemplate").tmpl(data.list)
+							.appendTo(".tabPaper tbody");
+					/* $("#totals").text(data.total); */
+					$("#pageNo").text(data.pageNum);
+					$("#pages").text(data.pages);
+				},
+				error : function() {
+					alert("请求失败!");
+				}
+			});
+		}
+	</script>
+</body>
+
+</html>

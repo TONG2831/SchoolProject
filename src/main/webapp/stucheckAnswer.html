@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>查看考试成绩</title>
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/jquery-3.3.1.js"></script>
+<script type="text/javascript" src="js/jquery.form.js"></script>
+<script src="js/jquery.tmpl.js"></script>
+<script type="text/javascript" src="kindeditor/kindeditor-all.js"></script>
+
+<style type="text/css">
+.paperInfo {
+	text-align: center;
+}
+
+.paperName {
+	font-size: 20px;
+	font-weight: 200;
+	line-height: 40px;
+}
+
+.param li {
+	display: inline-block;
+	line-height: 45px;
+}
+
+#content div {
+	margin-top: 20px;
+	width: 80%;
+	margin: 15px auto;
+	border: 1px solid grey;
+}
+
+#content ul {
+	margin-left: 20px;
+	border-bottom: 1px dashed grey;
+}
+
+#content li {
+	line-height: 35px;
+	font-size: 15px;
+}
+label {
+	line-height: 40px;
+	font-size: 15px;
+}
+
+p {
+	line-height: 40px;
+	font-size: 15px;
+}
+
+input[type="text"] {
+	width: 100px;
+	border-bottom: 1px solid;
+}
+
+.pagin {width：80 %; margin：6px auto;
+	
+}
+.standAnswer{
+	color:green;
+}
+.score{
+	color:blue;
+}
+.quesTitle,.stuAnswer{
+	font-weight:bold;
+}
+</style>
+</head>
+<body>
+	<div class="place">
+		<span>位置：</span>
+		<ul class="placeul">
+			<li><a href="#">首页</a></li>
+			<li><a href="#">查看成绩</a></li>
+			<li><a href="#">查看试卷</a></li>
+		</ul>
+	</div>
+
+
+	<div class="rightinfo">
+		<div class="paperInfo">
+		<span><a href="stugrade.html" style="color:blue;">返回</a></span>
+			<!-- <p class="paperName">软件工程在线考试</p>
+			<input type="hidden" name="paperId">
+			<ul class="param">
+				<li>考试时间:5分钟&nbsp;&nbsp;|&nbsp;&nbsp;</li>
+				<li>剩余时间:</li>
+			</ul> -->
+		</div>
+		<div id="content">
+			<!-- <div class="answer">
+				<span>简答题</span>
+				<ul>
+					<li>
+						<p>10.简述十一届三中全会的意义?</p>
+					</li>
+				</ul>
+			</div> -->
+		</div>
+	</div>
+	
+<!-- 模板 -->
+<script id="quesTmpl" type="text/x-jquery-tmpl">
+		<div>
+			<ul>
+				{{if question.qType=='c' || question.qType=='dc'}}
+					{{each list}}
+					{{if $index==0}}
+						<li class="quesTitle">${question.qId}.${$value}</li>
+					{{else}}
+						<li>${$value}</li>
+					{{/if}}
+					{{/each}}
+				{{else}}
+					<li class="quesTitle">${question.qId}.${question.qContent}</li>
+				{{/if}}
+				<li class='stuAnswer'><label >考生答案:</label><label class="stuAnswer">${stuAnswer}</label></li>
+				<li class="standAnswer"><label>标准答案:</label><label class="standAnswer">${question.qAnswer}</label></li>
+				<li class="score">
+					<label>得分:</label><label class="score">{{if score== null}}教师尚未阅卷{{else}}${score}{{/if}}</label>
+				</li>
+			</ul>
+		</div>
+	</script>
+
+	<script type="text/javascript">
+		$(function() {
+			var stuNo = $(".user input[name='stuNo']",window.parent.frames["topFrame"].document).val();
+			var eId = $(".user input[name='eId']",window.parent.frames["topFrame"].document).val();
+			var data = {};
+			data.stuNo = stuNo;
+			data.eId = eId;
+			$.ajax({
+				type : "post",
+				url : "doGrade/getMyAnswer",
+				async : false,
+				data : data,
+				success : function(data) {
+					console.log(data);
+					$("#quesTmpl").tmpl(data).appendTo("#content");
+				}
+			});
+			
+		});
+	</script>
+</body>
+</html>

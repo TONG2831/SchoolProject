@@ -1,0 +1,170 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/jquery.tmpl.js" />
+<script type="text/javascript">
+	$(document).ready(function() {
+
+		$(".tiptop a").click(function() {
+			$(".tip").fadeOut(200);
+		});
+
+		$(".sure").click(function() {
+			$(".tip").fadeOut(100);
+		});
+
+		$(".cancel").click(function() {
+			$(".tip").fadeOut(100);
+		});
+	});
+</script>
+</head>
+
+<body>
+
+	<div class="place">
+		<span>位置：</span>
+		<ul class="placeul">
+			<li><a href="#">首页</a></li>
+			<li><a href="#">在线考试</a></li>
+			<li><a href="#">选择考试</a></li>
+		</ul>
+	</div>
+
+	<div class="rightinfo">
+
+		<div class="tools">
+			<b>选择试卷进入考试</b>
+		</div>
+
+		<table class="tablelist">
+			<thead>
+				<tr>
+					<th>id<i class="sort"><img src="images/px.gif" /></i></th>
+					<th>考试名称</th>
+					<th>考试试卷</th>
+					<th>考试时间</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+
+
+		<div class="tip" style="width: 380px; height: 300px;">
+			<div class="tiptop">
+				<span>提示信息</span> <a></a>
+			</div>
+
+			<div class="tipinfo">
+				<div class="tipright">
+					<p>确认进入考试 ？</p>
+					<input type="hidden" />
+					<!-- <cite>如果是请点击确定按钮 ，否则请点取消。</cite> -->
+				</div>
+			</div>
+
+			<div class="tipbtn">
+				<input name="" type="button" class="sure" value="确定" />&nbsp; <input
+					name="" type="button" class="cancel" value="取消" />
+			</div>
+
+		</div>
+
+	</div>
+
+	<!--模板-->
+	<script id="myTemplate" type="text/x-jquery-tmpl">
+			<tr>
+				<td>${eId}</td>
+				<td>${eName}</td>
+				<td>${pName}</td>
+				<td>${eTime}</td>
+				<td>
+					<a href="#" class="tablelink">考试</a>
+				</td>
+			</tr>
+		</script>
+
+	<script type="text/javascript">
+		$('.tablelist tbody tr:odd').addClass('odd');
+
+		$(function() {
+
+			$.ajax({
+				type : "post",
+				url : "doExam/getAll",
+				async : true,
+				success : function(data) {
+					console.log(data);
+					$("#myTemplate").tmpl(data).appendTo("tbody");
+					bindEvent();
+				},
+				error : function() {
+					
+				}
+
+			});
+
+			$(".tiptop a").click(function() {
+				$(".tip").fadeOut(200);
+			});
+
+			/* 点击确定进入保存当前的信息eId */
+			$(".sure").click(function() {
+					var stuNo = $(".user input",window.parent.frames["topFrame"].document).val();
+					var eId = $("input[type='hidden']").val();
+					var data = {};
+					data.eId = eId;
+					data.stuNo = stuNo;
+					$.ajax({
+						type : "post",
+						url : "doExam/saveEId",
+						async : true,
+						data : data,
+						success : function(data) {
+							console.log(data);
+							$(".tip").fadeOut(100);
+							if(data=="success"){
+								window.location.href = "test.html";
+							}else if(data=="notexist"){
+								alert("你不在考试名单中");
+							}else{
+								alert("你已经完成考试，如需重新考试，请联系老师！");
+							}
+							
+						},
+						error : function() {
+							alert("考试请求失败！");
+						}
+
+					});
+			});
+
+			$(".cancel").click(function() {
+				$(".tip").fadeOut(100);
+			});
+		});
+
+		function bindEvent() {
+			$(".tablelink").click(function() {
+				var eId = $(this).parent().parent().children().eq(0).text();
+				$("input[type='hidden']").val(eId);
+				var stuNo = $(".user input",window.parent.frames["topFrame"].document).val();
+				if(stuNo == "" || stuNo == undefined){
+					alert("请登录!")
+				}else{
+					$(".tip").fadeIn(100);
+				}
+			});
+		}
+	</script>
+</body>
+
+</html>

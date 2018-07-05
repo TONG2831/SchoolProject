@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>试卷管理</title>
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+	.autocreate {
+		height:300px;
+	}
+	.autocreate ul{
+		margin-top:-22px;
+	}
+	.autocreate input{
+		line-height:20px;
+		border:1px solid lightgray;
+		margin-left: 20px;
+	}
+	.autocreate .formitm-1{
+		margin-left: -111px;
+	}
+</style>
+<script type="text/javascript" src="js/jquery-3.3.1.js"></script>
+<script type="text/javascript" src="js/jquery.form.js"></script>
+<script src="js/jquery.tmpl.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		
+		$(".import").click(function(){
+			$("#filefield").hide();
+			$(".localImport").fadeIn(200);
+		});
+		
+		$(".addStu").click(function() {
+			//tip模板修改
+			$('.errinfo').empty();
+			$(".tiptop span").empty();
+			$(".tiptop span").append("添加");
+			$("#btn-alter").hide();
+			$("#btn-add").show();
+			$("textarea").val('');
+			$(".tip input[type='text']").attr("readonly","readonly");
+			
+			$.ajax({
+				type : "post",
+				url : "doQues/getQId",
+				async : false,
+				dataType : "json",
+				success : function(data){
+					$(".tip input[type='text']").val(data.qId);
+				}
+			});
+			
+			$(".tip").fadeIn(200);
+			
+		});
+
+		$(".tiptop a").click(function() {
+			$(".tip").fadeOut(200);
+			$(".fileTip").fadeOut(200);
+		});
+
+		$("#btn-cancel").click(function() {
+			$(".tip").fadeOut(100);
+			$(".autocreate").fadeOut(100);
+		});
+		$(".autoCreate").click(function(){
+			$(".autocreate").fadeIn(100);
+		});
+	});
+</script>
+
+
+</head>
+	<body>
+
+	<div class="place">
+		<span>位置：</span>
+		<ul class="placeul">
+			<li><a href="#">首页</a></li>
+			<li><a href="#">试题管理</a></li>
+			<li><a href="#">试卷操作</a></li>
+		</ul>
+	</div>
+	<br>
+	<div class="rightinfo">
+
+		<div class="tools">
+
+			<ul class="toolbar">
+				<li><label>&nbsp;&nbsp;试卷名称:</label>
+					<input name="searchText" type="text" class="scinput" />
+				</li>
+
+				<li><label>&nbsp;</label>
+					<input name="" type="button" class="scbtn" value="查询" />
+				</li>
+
+			</ul>
+
+			<ul class="toolbar1">
+				<li class="deleteSome"><span><img src="images/t03.png" /></span>删除</li>
+				<div class="dropdown">
+					<a class="dropbtn"><span><img src="images/t01.png" /></span>添加试卷</a>
+					<div class="dropdown-content">
+						<a href="right-question-add.html" class="addStu1">在题库中添加</a> 
+						<a href="#" class="import">本地导入</a>
+						<a href="#" class="autoCreate">自动生成</a>
+					</div>
+				</div>
+			</ul>
+
+		</div>
+
+		<table class="tablelist" id="table-data">
+			<thead>
+				<tr>
+					<th><input id="checkedAll" type="checkbox" value="all" /></th>
+					<th>试卷编号<i class="sort"><img src="images/px.gif" /></i></th>
+					<th>试卷名称</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+
+			</tbody>
+		</table>
+
+		<div class="pagin">
+			<div class="message">
+				共<i class="blue" id="totals"></i>条记录，当前显示第&nbsp;<i class="blue"
+					id="pageNo">&nbsp;</i>页, 共<i class="blue" id="pages"></i>页
+			</div>
+			<ul class="paginList">
+				<li class="paginItem">
+					<a href="javascript:;">
+						<span class="pagepre"></span>
+					</a>
+				</li>
+				<li class="paginItem"><a href="#" class="prePage">上一页</a></li>
+				<li class="paginItem"><a href="#" class="nextPage">下一页</a></li>
+				<li class="paginItem">
+					<a href="javascript:;">
+						<span class="pagenxt"></span>
+					</a>
+				</li>
+			</ul>
+			<div class="pageJump">
+				<button class="jump" style="float:left">跳</button> &nbsp;<input type="text" name="pageNum">&nbsp;页
+			</div>
+		</div>
+
+		<!-- fileTip -->
+		<div class="fileTip localImport">
+			<div class="tiptop">
+				<span>本地导入</span> <a></a>
+			</div>
+
+			<div class="tip-form">
+				<form action="doFile/uploadPaper" id="fileForm" enctype="multipart/form-data" method="post" onsubmit="return checkFile(this)">
+					<fieldset>
+						<legend></legend>
+						<label id="filefield" hidden="hidden">
+							<span id="fileTitle">已选文件:</span>
+							<span id="fileName"></span>
+						</label>
+						<div class="formitm">
+							<div class="ipt">
+							<a class="input-file input-fileup" href="javascript:;">
+         							选择文件 + 
+         						<input size="100" type="file" name="file" id="file">
+							</a>
+								
+								<input type="submit" class="ipt-sub" name="确定"/>
+								
+							</div>
+						</div>
+					</fieldset>
+				</form>
+			</div>
+		</div>
+		
+			<!-- 试卷自动生成 -->
+		<div class="fileTip autocreate">
+			<div class="tiptop">
+				<span>自动生成试卷</span> <a></a>
+			</div>
+
+			<div class="tip-form">
+				<form action="doFile/uploadPaper" id="fileForm" enctype="multipart/form-data" method="post" onsubmit="return checkFile(this)">
+					<ul>
+						<li><label>试卷名:</label><input type="text" name="pName" placeholder="请输入试卷名"><label style="color:red"></label></li>
+						<li><label>单选题:</label><input type="text" name="cNum" value="0"></li>
+						<li><label>多选题:</label><input type="text" name="dcNum" value="0"></li>
+						<li><label>判断题:</label><input type="text" name="jNum" value="0"></li>
+						<li><label>填空题:</label><input type="text" name="fNum" value="0"></li>
+						<li><label>简答题:</label><input type="text" name="aNum" value="0"></li>
+					</ul>
+					<div class="formitm formitm-1">
+							<button id="btn-autocreate" class="u-btn" type="button">确定</button>
+							<button id="btn-cancel" class="u-btn" type="button">取消</button>
+					</div>
+				</form>
+			</div>
+		</div>
+		
+		<!-- tip -->
+		<div class="tip">
+			<div class="tiptop">
+				<span>创建试卷</span> <a></a>
+			</div>
+
+			<div class="tipinfo">
+				<span><img src="images/ticon.png" /></span>
+				<div class="tipright">
+					<p>请选择相应试题:</p>
+					<p class="errinfo" style="color:red"></p>
+				</div>
+			</div>
+
+			<div class="tip-form">
+				<form name="" action="#" method="get">
+					<fieldset>
+						<legend></legend>
+						<div class="formitm">
+							<label class="lab">试题编号：</label>
+							<div class="ipt">
+								<input type="text" class="u-ipt" name="id" />
+							</div>
+						</div>
+						<div class="formitm">
+							<label class="lab">试题内容：</label>
+							<div class="ipt">
+								<textarea rows="6" cols="10" class="u-area a-content"></textarea>
+							</div>
+						</div>
+						<div class="formitm">
+							<label class="lab">试题答案：</label>
+							<div class="ipt">
+								<textarea rows="6" cols="10" class="u-area a-answer"></textarea>
+							</div>
+						</div>
+						<div class="formitm">
+							<label class="lab">试卷类型：</label>
+							<div class="ipt">
+								<select class="selectQType">
+									<option value="c">选择题</option>
+									<option value="j">判断题</option>
+									<option value="f">填空题</option>
+									<option value="a">简答题</option>
+								</select>
+							</div>
+						</div>
+						<div class="formitm formitm-1">
+							<button id="btn-add" class="u-btn" type="button">确定</button>
+							<button id="btn-alter" class="u-btn">修改</button>
+							<button id="btn-cancel" class="u-btn" type="button">取消</button>
+						</div>
+					</fieldset>
+				</form>
+			</div>
+		</div>
+		<!-- tip End -->
+
+	</div>
+
+	<!--模板-->
+	<script id="myTemplate" type="text/x-jquery-tmpl">
+			<tr>
+				<td><input type="checkbox" value=${pId} /></td>
+				<td>${pId}</td>
+				<td>${pName}</td>
+				<td>
+					<a href="#" class="tablelink" data-id="${pId}" data-action="edit">修改</a>
+					<a href="#" class="tablelink deleteQues" data-id="${pId}" data-action="delete">删除</a>
+				</td>
+			</tr>
+		</script>
+
+	<!-- JQuery -->
+	<script type="text/javascript">
+		$('.tablelist tbody tr:odd').addClass('odd');
+
+		$(function() {
+			
+			//隐藏tip中的修改按钮
+			$("#btn-alter").hide();
+			
+			/* -----初始化页面信息----- */
+			
+			/* 初始化试卷查询参数 */
+			var pageNo = 1;
+			var paper = {};
+			paper.searchText = "";
+			paper.pageNo = pageNo;
+			
+			getPInfo(paper);
+			bindChangeSelect1();
+			/* -----初始化页面信息---END-- */
+			
+			
+			/* ----事件------ */
+			
+			/* 自动创建试卷事件 */
+			$("#btn-autocreate").click(function(){
+				
+				$("input[name='pName']").next().empty();
+				
+				var data = {};
+				data.pName = $("input[name='pName']").val();
+				data.cNum = $("input[name='cNum']").val();
+				data.dcNum = $("input[name='dcNum']").val();
+				data.jNum = $("input[name='jNum']").val();
+				data.fNum = $("input[name='fNum']").val();
+				data.aNum = $("input[name='aNum']").val();
+				
+				if(data.pName == "" || data.pName == undefined){
+					$("input[name='pName']").next().text("请输入试卷名");
+				}else if(data.cNum+data.dcNum+data.jNum+data.fNum+data.aNum==0){
+					$("input[name='pName']").next().empty();
+					$("input[name='pName']").next().text("请输入相应题目数量");
+				}else{
+					$.ajax({
+						type : "post",
+						url : "doPaper/autoCreate",
+						async : true,
+						data : data,
+						success : function(data) {
+							console.log(data);
+							if(data=="1"){
+								$("input[name='pName']").next().text("名称已存在！");
+							}else if(data=="0"){
+								alert("创建成功！");
+								$(".tip").fadeOut(100);
+								window.location.reload();
+							}else{
+								alert("创建失败！");
+								$(".tip").fadeOut(100);
+								window.location.reload();
+							}
+							
+						},
+						error : function() {
+							alert("创建试卷请求失败！")
+						}
+					});
+				}
+			});
+			
+			
+			/* 添加 */
+			$("#btn-add").click(function() {
+				var data = {};
+				data.qId = $("input[name='id']").val();
+				data.qContent = $(".a-content").val();
+				data.qAnswer = $(".a-answer").val();
+				data.qType = $(".selectQType").val();
+				
+				console.log(data);
+				
+				$.ajax({
+					type : "post",
+					url : "doQues/addQues",
+					async : true,
+					dataType : "json",
+					contentType : 'application/json;charset=utf-8',
+					data : JSON.stringify(data),
+					success : function(data) {
+						console.log(data.msg);
+						$(".tip").fadeOut(100);
+						getPInfo(paper);
+						//window.location.reload();
+					},
+					error : function() {
+
+					}
+				});
+			});
+			
+			/* 修改信息 */
+			$("#btn-alter").click(function() {
+				var data = {};
+				data.qId = $("input[name='id']").val();
+				data.qContent = $(".a-content").val();
+				data.qAnswer = $(".a-answer").val();
+				data.qType = $(".selectQType").val();
+				
+				console.log(data);
+				
+				$.ajax({
+					type : "post",
+					url : "doQues/alterQues",
+					async : false,
+					dataType : "json",
+					contentType : 'application/json;charset=utf-8',
+					data : JSON.stringify(data),
+					success : function(data) {
+						$(".tip").fadeOut(200);
+						console.log(data);
+					},
+					error : function() {
+						alert("请求失败!")
+					}
+				});
+			});
+			
+			/* checked 全选和反选 */
+			$("#checkedAll").change(function(){
+				var c = $("#checkedAll").prop("checked");
+				console.log(c);
+				$("tbody input").prop("checked",c);
+			});
+			
+			/* 批量删除 */
+			$(".deleteSome").click(function(){
+				var qId = "";
+				 $("tbody input:checked").each(function(){
+					 console.log($(this).val());
+					 qId+=$(this).val()+".";
+				 })
+				 var ques = {};
+				 ques.pId = qId;
+				 $.ajax({
+						type : "post",
+						url : "doPaper/deleteQuesAndPaper",
+						async : true,
+						data : ques,
+						success : function() {
+							window.location.reload();
+						},
+						error : function() {
+						}
+					});
+			});
+			
+			/* 按条件搜索试卷信息 */
+			$(".scbtn").click(function(){
+				paper.searchText = $("input[name='searchText']").val();
+				getPInfo(paper);
+			});
+			
+			/* 下一页点击事件 */
+			$(".nextPage").click(function(){
+				var pages = $("#pages").text();
+				var pageNo = $("#pageNo").text();
+				if(pages == pageNo){
+					//alert("已在最后一页!")
+				}else{
+					paper.pageNo = ++pageNo;
+					getPInfo(paper);
+				}
+			});
+			
+			/* 上一页点击事件 */
+			$(".prePage").click(function(){
+				var pages = $("#pages").text();
+				var pageNo = $("#pageNo").text();
+				if('1' == pageNo){
+					//alert("当前页为第一页!");
+				}else{
+					paper.pageNo = --pageNo;
+					getPInfo(paper);
+				}
+			});
+			
+			/* 跳页点击事件 */
+			$(".jump").click(function(){
+				var pageNum = parseInt($("input[name='pageNum']").val());
+				var pages = parseInt($("#pages").text());
+				var pageNo = parseInt($("#pageNo").text());
+				if(pageNum>pages){
+					alert("页数过大!");
+				}else if(pageNum == pageNo){
+					alert("已在当前页!");
+				}else{
+					paper.pageNo = pageNum;
+					getPInfo(paper);
+				}
+				
+			});
+			/* 表单提交后的数据返回 */
+			$("#fileForm").ajaxForm(function(data){  
+				console.log(data);
+				if(data.msg=='1'){
+					alert("试卷名称已存在或试卷已存在！")
+				}else if(data.msg=='0'){
+					alert("试卷导入成功！");
+				}else{
+					alert("试卷导入失败！");
+				}
+				$(".fileTip").fadeOut(200);
+				window.location.reload();
+		    }); 
+			
+			/* 选中文件事件 */
+			$(".input-fileup").change(function(){
+				var file = $("input[type='file']").val();
+				var split = file.split("\\");
+				var fileName = split[2];
+				$("#fileName").text(fileName);
+				$("#filefield").show();
+			});
+			
+			/*绑定select1 改变事件  */
+			function bindChangeSelect1(){
+				$(".select1").change(function(){
+					ques.qType = $(".select1 option:selected").attr("data-value");
+					ques.pId = $(".select2 option:selected").attr("data-value");
+					getQInfo(ques);
+				});
+			}
+			/*绑定select2 改变事件  */
+			function bindChangeSelect2(){
+				$(".select2").change(function(){
+					ques.qType = $(".select1 option:selected").attr("data-value");
+					ques.pName = $(".select2 option:selected").attr("data-value");
+					getQInfo(ques);
+				});
+			}
+		});
+		
+		/* 分页查询试题信息 */
+		function getPInfo(paper){
+			$.ajax({
+				type : "post",
+				url : "doPaper/getPaper",
+				async : false,
+				data : paper,
+				dataType : "json",
+				success : function(data) {
+					console.log(data);
+					$("tbody").empty();
+					$("#myTemplate").tmpl(data.list).appendTo("tbody");
+					$("#totals").text(data.total);
+					$("#pageNo").text(data.pageNum);
+					$("#pages").text(data.pages);
+					// 绑定点击事件
+					bindEvent();
+				},
+				error : function() {
+					alert("请求失败!");
+				}
+			});
+		}
+		
+		/* 绑定点击事件*/
+		function bindEvent() {
+			// 修改
+			$('#table-data a[data-action="edit"]').on('click', function() {
+				var paper = {}
+				paper.pId= $(this).attr('data-id');
+				console.log(paper.pId);
+				$.ajax({
+					type : "post",
+					url : "doPaper/savePId",
+					async : true,
+					data : paper,
+					success : function() {
+						window.location.href = "right-paper-alter.html";
+					},
+					error : function() {
+						alert("保存试卷id请求失败!")
+					}
+				});
+			});
+			
+			// 删除事件
+			$('#table-data a[data-action="delete"]').on('click', function() {
+				var ques = {};
+				ques.pId = $(this).attr('data-id');
+				$.ajax({
+					type : "post",
+					url : "doPaper/deletePaper",
+					async : true,
+					data : ques,
+					success : function() {
+						window.location.reload();
+					},
+					error : function() {
+						
+					}
+				
+			});
+			});
+		}
+	</script>
+</body>
+
+</html>

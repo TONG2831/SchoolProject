@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<title>管理员密码修改</title>
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<link href="css/fSelect.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/jquery-3.3.1.js"></script>
+<script type="text/javascript" src="js/jquery.form.js"></script>
+<script src="js/jquery.tmpl.js"></script>
+<script type="text/javascript" src="js/fSelect.js"></script>
+<style type="text/css">
+.container {
+	margin-top: 30px;
+	text-align: left;
+	font-size: 14px;
+}
+
+.container label {
+	line-height: 30px;
+	margin-left: 30px;
+	margin-right: 30px;
+	font-size: 14px;
+}
+
+.title label {
+	font-size: 15pt;
+	font-family: "微软雅黑";
+	font-weight: bold;
+}
+
+.title {
+	margin-bottom: 15px;
+}
+
+.container input {
+	width: 220px;
+	height: 32px;
+	line-height: 32px;
+	border-top: solid 1px #a7b5bc;
+	border-left: solid 1px #a7b5bc;
+	border-right: solid 1px #ced9df;
+	border-bottom: solid 1px #ced9df;
+	background: url(images/inputbg.gif) repeat-x;
+	margin-bottom: 10px;
+	text-indent: 10px;
+}
+
+hr {
+	margin-left: 30px;
+}
+
+.container button {
+	border: 0;
+	margin: 0;
+	padding: 0;
+	width: 137px;
+	height: 35px;
+	background: url(images/btnbg.png) no-repeat;
+	font-size: 14px;
+	font-weight: bold;
+	color: #fff;
+	cursor: pointer;
+	margin-left: 130px;
+}
+
+.errorInfo {
+	display: inline-block;
+}
+.fileTip p{
+	font-size:13pt;
+	font-family: inherit;
+}
+.fileTip{
+	width: 213px;
+    height: 136px;
+}
+</style>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$(".tiptop a").click(function() {
+			$(".fileTip").fadeOut(200);
+		});
+
+		$("#btn-cancel").click(function() {
+			$(".fileTip").fadeOut(100);
+		});
+
+	});
+</script>
+
+</head>
+
+<body>
+
+	<div class="place">
+		<span>位置：</span>
+		<ul class="placeul">
+			<li><a href="#">首页</a></li>
+			<li><a href="#">管理员密码修改</a></li>
+		</ul>
+	</div>
+	<div class="container">
+		<div class="title">
+			<label>修改密码</label>
+		</div>
+		<hr style="border: 3 double #987cb9" align="left" width="30%"
+			color="grey" size="3">
+		<br> <br>
+		<div>
+			<label>用户名*&nbsp;&nbsp;&nbsp;</label> 
+			<input type="text" name="adminName"	placeholder="请输入用户名" />
+			<span style="color: red;" class="errorInfo"></span>
+		</div>
+		<div>
+			<label>原密码*&nbsp;&nbsp;&nbsp;</label> 
+			<input type="password" name="oldPwd" placeholder="原密码" />
+			<span style="color: red;" class="errorInfo"></span>
+		</div>
+		<div>
+			<label>新密码*&nbsp;&nbsp;&nbsp;</label> 
+			<input type="password" name="newPwd" placeholder="新密码" />
+			<span style="color: red;" class="errorInfo"></span>
+		</div>
+		<div>
+			<label>确认密码*</label> 
+			<input type="password" name="confirmPwd" placeholder="确认密码" />
+			<span style="color: red;" class="errorInfo"></span>
+		</div>
+		<div class="container-btn">
+			<button class="create-btn">确认</button>
+		</div>
+	</div>
+	<div class="fileTip">
+			<div class="tiptop">
+				<span>Tip</span> <a></a>
+			</div>
+			<div class="tip-form">
+				<p>修改密码成功</p>
+			</div>
+		</div>
+	<script type="text/javascript">
+		$(function() {
+			$(".create-btn").click(function(){
+				$(".container span").text("");
+				
+				var adminName = $("input[name='adminName']").val();
+				var oldPwd = $("input[name='oldPwd']").val();
+				var newPwd = $("input[name='newPwd']").val();
+				var confirmPwd = $("input[name='confirmPwd']").val();
+				
+				if (adminName == '' || adminName == undefined) {
+							$("input[name='adminName']").next().text("请输入用户名");
+				} else if (oldPwd == '' || oldPwd == undefined) {
+					$("input[name='oldPwd']").next().text("请输入密码");
+				} else if (newPwd == '' || newPwd == undefined) {
+					$("input[name='newPwd']").next().text("请输入新密码");
+				} else if (confirmPwd == '' || confirmPwd == undefined) {
+					$("input[name='confirmPwd']").next().text("请输入确认密码");
+				} else if(newPwd != confirmPwd){
+					$("input[name='confirmPwd']").next().text("两次密码输入不一致");
+				} else {
+					var admin = {};
+					admin.username = adminName;
+					admin.password = oldPwd;
+					admin.newPwd = newPwd
+					$.ajax({
+						type : "post",
+						url : "do/alterPwd",
+						async : true,
+						data : admin,
+						success : function(data) {
+							console.log(data);
+							if(data.msg=='failure'){
+								$("input[name='oldPwd']").next().text("密码不正确");
+							}else{
+								$(".fileTip").fadeIn(100);
+								//window.location.reload();
+							}
+						},
+						error : function() {
+							alert("请求失败!");
+						}
+
+					});
+				}
+				
+			});
+		});
+	</script>
+</body>
+
+</html>

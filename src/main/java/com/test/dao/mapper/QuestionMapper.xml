@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.test.dao.QuestionMapper" >
+  <resultMap id="BaseResultMap" type="Question" >
+    <id column="q_Id" property="qId" jdbcType="INTEGER" />
+    <result column="q_Content" property="qContent" jdbcType="VARCHAR" />
+    <result column="q_Answer" property="qAnswer" jdbcType="VARCHAR" />
+    <result column="q_Type" property="qType" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="QuestionResultMap" type="QuestionInfo" >
+    <id column="q_Id" property="qId" jdbcType="INTEGER" />
+    <result column="q_Content" property="qContent" jdbcType="VARCHAR" />
+    <result column="q_Answer" property="qAnswer" jdbcType="VARCHAR" />
+    <result column="q_Type" property="qType" jdbcType="VARCHAR" />
+    <result column="p_Id" property="pId" jdbcType="INTEGER" />
+    <result column="p_Name" property="pName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    q_Id, q_Content, q_Answer, q_Type
+  </sql>
+  
+  <!-- 获取试题信息 -->
+  <select id="selectQInfo" resultMap="QuestionResultMap">
+  	Select 
+  		q.q_Id, q_Content, q_Answer, q_Type, p.p_Id, p_name
+  	From 
+  		question q
+  	LEFT JOIN 
+  		question_paper qp
+  	ON  
+  		q.q_id = qp.q_id
+  	LEFT JOIN
+  		paper p
+  	ON
+  		p.p_id = qp.p_id
+  	<where>
+  		<if test="qType != 'all'">
+			q.q_Type = #{qType}
+		</if>
+		<if test="pName != 'all'">
+			AND p.p_Id = #{pName}
+		</if>
+		<if test="searchText != ''">
+			AND q.q_Content like "%"#{searchText}"%"
+		</if>
+  	</where>
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+  	select * from question
+  </select>
+  <!-- 获取当前id最大值 -->
+  <select id="getQId" resultType="java.lang.Integer">
+  	select max(q_Id) from question
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from question
+    where q_Id = #{qId,jdbcType=INTEGER}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from question
+    where q_Id = #{qId,jdbcType=INTEGER}
+  </delete>
+  
+  <insert id="insert" useGeneratedKeys="true" keyProperty="qId" parameterType="com.test.domain.Question" >
+    insert into question (q_Id, q_Content, q_Answer, 
+      q_Type)
+    values (null, #{qContent,jdbcType=VARCHAR}, #{qAnswer,jdbcType=VARCHAR}, 
+      #{qType,jdbcType=VARCHAR})
+  </insert>
+  
+  <insert id="insertSelective" parameterType="com.test.domain.Question" >
+    insert into question
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="qId != null" >
+        q_Id,
+      </if>
+      <if test="qContent != null" >
+        q_Content,
+      </if>
+      <if test="qAnswer != null" >
+        q_Answer,
+      </if>
+      <if test="qType != null" >
+        q_Type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="qId != null" >
+        #{qId,jdbcType=INTEGER},
+      </if>
+      <if test="qContent != null" >
+        #{qContent,jdbcType=VARCHAR},
+      </if>
+      <if test="qAnswer != null" >
+        #{qAnswer,jdbcType=VARCHAR},
+      </if>
+      <if test="qType != null" >
+        #{qType,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.test.domain.Question" >
+    update question
+    <set >
+      <if test="qContent != null" >
+        q_Content = #{qContent,jdbcType=VARCHAR},
+      </if>
+      <if test="qAnswer != null" >
+        q_Answer = #{qAnswer,jdbcType=VARCHAR},
+      </if>
+      <if test="qType != null" >
+        q_Type = #{qType,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where q_Id = #{qId,jdbcType=INTEGER}
+  </update>
+  
+  <update id="updateByPrimaryKey" parameterType="Question" >
+    update question
+    set q_Content = #{qContent,jdbcType=VARCHAR},
+      q_Answer = #{qAnswer,jdbcType=VARCHAR},
+      q_Type = #{qType,jdbcType=VARCHAR}
+    where q_Id = #{qId,jdbcType=INTEGER}
+  </update>
+  
+</mapper>
